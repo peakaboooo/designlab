@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Une seule URL : les outils sont des routes #/… d'une même page, que les moteurs ne distinguent pas. -->
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc>https://peakaboooo.github.io/designlab/</loc>
+    <changefreq>monthly</changefreq>
+  </url>
+</urlset>

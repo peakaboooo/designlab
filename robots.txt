@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://peakaboooo.github.io/designlab/sitemap.xml

@@ -1,0 +1,811 @@
+/* DesignLab : feuille de style unique.
+   Brutalisme : fond, encre, une seule couleur d'accent. Bordures pleines, aucun arrondi,
+   aucune ombre floue. Toute valeur répétée passe par un token de :root. */
+
+/* ---------- Tokens ---------- */
+:root {
+  --fond: #EDEBE4;
+  --fond-rgb: 237, 235, 228;
+  --encre: #141414;
+  --encre-rgb: 20, 20, 20;
+  --accent: #FF3B00;
+  --accent-rgb: 255, 59, 0;
+  /* Texte posé sur l'accent : toujours sombre (contraste AA dans les deux thèmes). */
+  --sur-accent: #141414;
+  --attenue: rgba(var(--encre-rgb), 0.62);
+
+  --bord: 3px;
+  --bord-fin: 2px;
+  --trait: var(--bord) solid var(--encre);
+  --trait-fin: var(--bord-fin) solid var(--encre);
+  --ombre: 6px 6px 0 var(--encre);
+  --ombre-petite: 3px 3px 0 var(--encre);
+
+  --police-titre: "Archivo Black", "Arial Black", Impact, sans-serif;
+  --police-texte: "Space Grotesk", "Helvetica Neue", Arial, sans-serif;
+  --police-mono: "Space Mono", ui-monospace, "Courier New", monospace;
+
+  --e1: 4px;
+  --e2: 8px;
+  --e3: 12px;
+  --e4: 16px;
+  --e5: 24px;
+  --e6: 40px;
+  --gouttiere: clamp(16px, 3vw, 32px);
+  --largeur-panneau: clamp(300px, 30vw, 420px);
+  --largeur-raccourcis: clamp(140px, 11vw, 180px);
+
+  --duree: 90ms;
+  --damier: rgba(var(--encre-rgb), 0.12);
+
+  color-scheme: light;
+}
+
+/* Thème sombre : système par défaut, sauf choix explicite mémorisé. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --fond: #141414;
+    --fond-rgb: 20, 20, 20;
+    --encre: #EDEBE4;
+    --encre-rgb: 237, 235, 228;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --fond: #141414;
+  --fond-rgb: 20, 20, 20;
+  --encre: #EDEBE4;
+  --encre-rgb: 237, 235, 228;
+  color-scheme: dark;
+}
+
+/* ---------- Base ---------- */
+*, *::before, *::after { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: var(--fond);
+  color: var(--encre);
+  font: 400 16px/1.45 var(--police-texte);
+  overflow-x: hidden;
+}
+h1, h2, h3, p { margin: 0; }
+a { color: inherit; }
+kbd {
+  display: inline-block;
+  padding: 0 0.35em;
+  border: 1px solid currentColor;
+  font: 700 0.72em/1.5 var(--police-mono);
+  text-transform: none;
+  vertical-align: 0.1em;
+}
+canvas { display: block; }
+[hidden] { display: none !important; }
+
+/* Focus franc et visible partout, y compris sur fond inversé. */
+:focus-visible {
+  outline: var(--bord) solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* Titres focalisés par le routeur (annonce aux lecteurs d'écran) : pas de cadre, ils ne sont pas interactifs. */
+[tabindex="-1"]:focus { outline: none; }
+
+.visuellement-cache {
+  position: absolute !important;
+  width: 1px; height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+.saut {
+  position: absolute;
+  left: var(--e2);
+  top: -100px;
+  z-index: 10;
+  padding: var(--e2) var(--e3);
+  background: var(--accent);
+  color: var(--sur-accent);
+  font-weight: 700;
+}
+.saut:focus { top: var(--e2); }
+
+/* Surfaces de rendu hors écran (p5, Paper) : jamais visibles, jamais dans la mise en page. */
+.dl-hote {
+  position: fixed;
+  left: -100000px;
+  top: 0;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.etiquette {
+  font: 700 12px/1.2 var(--police-mono);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+.num {
+  display: inline-grid;
+  place-items: center;
+  min-width: 2.1em;
+  padding: 0 0.3em;
+  border: var(--trait-fin);
+  font-family: var(--police-mono);
+  font-weight: 700;
+}
+.vide {
+  padding: var(--e5) var(--gouttiere);
+  border-bottom: var(--trait);
+  font-family: var(--police-mono);
+}
+.vide-petit { padding: var(--e2) 0; border: 0; color: var(--attenue); font-size: 13px; }
+.alerte {
+  padding: var(--e2) var(--e3);
+  border: var(--trait-fin);
+  border-left-width: 10px;
+  border-left-color: var(--accent);
+  font-size: 14px;
+}
+
+/* ---------- Boutons ---------- */
+.bouton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--e2);
+  min-height: 44px;
+  padding: var(--e2) var(--e4);
+  border: var(--trait);
+  border-radius: 0;
+  background: var(--fond);
+  color: var(--encre);
+  font: 700 14px/1.1 var(--police-texte);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background var(--duree), color var(--duree), transform var(--duree);
+}
+.bouton:hover { background: var(--encre); color: var(--fond); }
+.bouton:active { transform: translate(2px, 2px); }
+.bouton-petit { min-height: 36px; padding: var(--e1) var(--e3); font-size: 12px; border-width: var(--bord-fin); }
+.bouton-plein { background: var(--encre); color: var(--fond); }
+.bouton-plein:hover { background: var(--fond); color: var(--encre); }
+.bouton-accent { background: var(--accent); color: var(--sur-accent); box-shadow: var(--ombre-petite); }
+.bouton-accent:hover { background: var(--encre); color: var(--fond); }
+.bouton-large { width: 100%; min-height: 56px; font-size: 16px; }
+.bouton[aria-pressed="true"] { background: var(--encre); color: var(--fond); }
+.bouton:disabled { opacity: 0.45; cursor: not-allowed; transform: none; }
+
+/* ---------- Barre ---------- */
+.barre {
+  display: flex;
+  align-items: center;
+  gap: var(--e4);
+  padding: var(--e3) var(--gouttiere);
+  border-bottom: var(--trait);
+}
+/* Logo GL Studio en SVG intégré : « G L » garde ses couleurs de marque (rouge, bleu),
+   « Studio. » est en currentColor, donc à l'encre du thème. */
+.barre-logo {
+  display: inline-flex;
+  align-items: center;
+  color: var(--encre);
+  text-decoration: none;
+}
+.barre-logo-svg { display: block; height: clamp(22px, 2.4vw, 30px); width: auto; }
+.barre-logo:hover { color: var(--accent); }
+.barre-info {
+  flex: 1;
+  font: 400 12px/1.2 var(--police-mono);
+  text-transform: uppercase;
+  color: var(--attenue);
+}
+
+/* ---------- Accueil ---------- */
+.accueil-tete {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 340px);
+  align-items: end;
+  gap: var(--e5);
+  padding: var(--e6) var(--gouttiere) var(--e5);
+  border-bottom: var(--trait);
+}
+.accueil-titre { --taille-titre-geant: clamp(56px, 13vw, 210px); }
+.titre-geant {
+  font: 400 var(--taille-titre-geant)/0.84 var(--police-titre);
+  text-transform: uppercase;
+  letter-spacing: -0.045em;
+  overflow-wrap: anywhere;
+}
+.accueil-intro { font-size: clamp(15px, 1.4vw, 18px); max-width: 34ch; }
+/* Signature sous le titre géant : petite, en mono, comme une légende d'auteur.
+   Alignée sur le trait vertical du « L » et non sur le bord de la boîte : Archivo Black laisse
+   0,074 em d'approche avant le L (mesuré sur le rendu réel, pas sur measureText qui arrondit),
+   soit ~16 px à 210 px ; on retire l'approche du « p » de Space Mono (0,052 em) pour que les deux
+   encres tombent sur la même verticale à toute taille. À revoir si le titre change de première lettre. */
+.titre-signature {
+  margin-top: var(--e3);
+  margin-left: calc(var(--taille-titre-geant) * 0.074 - 0.052em);
+  font: 700 clamp(12px, 1vw, 14px)/1.2 var(--police-mono);
+  letter-spacing: 0.04em;
+  color: var(--attenue);
+}
+
+/* Filtres sur deux lignes : 1) recherche + genre (quoi), 2) affichage (comment). */
+.filtres { border-bottom: var(--trait); }
+.filtres-ligne { display: flex; flex-wrap: wrap; align-items: stretch; }
+.filtres-ligne + .filtres-ligne { border-top: var(--trait); }
+.filtre-groupe { display: flex; align-items: stretch; flex: 3 1 420px; }
+.filtre-titre {
+  display: flex;
+  align-items: center;
+  flex: 0 0 clamp(96px, 8vw, 132px);
+  padding: 0 var(--e4);
+  border-right: var(--trait);
+}
+.filtre-familles,
+.filtre-affichage { display: flex; flex-wrap: wrap; flex: 1 1 auto; }
+.filtre-familles .bouton,
+.filtre-affichage .bouton {
+  flex: 1 0 auto;
+  min-height: 60px;
+  border: 0;
+  border-right: var(--trait);
+  border-bottom: var(--trait);
+  margin-bottom: calc(-1 * var(--bord));
+}
+.filtre-familles .bouton:last-child,
+.filtre-affichage .bouton:last-child { border-right: 0; }
+/* Icônes Carbon (vendor/icons) : couleur = currentColor, elles suivent l'inversion au survol. */
+.bouton .icone { width: 20px; height: 20px; flex: none; }
+
+.filtre-recherche {
+  display: flex;
+  flex-direction: column;
+  gap: var(--e1);
+  flex: 1 1 260px;
+  padding: var(--e3) var(--gouttiere);
+  border-right: var(--trait);
+}
+.filtre-recherche input {
+  width: 100%;
+  border: 0;
+  border-bottom: var(--trait-fin);
+  border-radius: 0;
+  background: transparent;
+  color: var(--encre);
+  font: 700 22px/1.3 var(--police-texte);
+  padding: var(--e1) 0;
+}
+.filtre-recherche input::placeholder { color: var(--attenue); }
+
+/* Grille rigide : bordures portées par les cartes, la grille ne dessine que le bord gauche/haut. */
+.grille-outils {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  /* Au plus 5 colonnes : sur grand écran, 10 outils = 2 rangées pleines, sans carte orpheline. */
+  grid-template-columns: repeat(auto-fill, minmax(max(min(100%, 270px), calc(20% - 1px)), 1fr));
+}
+.grille-outils > li { display: flex; border-right: var(--trait); border-bottom: var(--trait); }
+.carte {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  text-decoration: none;
+  transition: background var(--duree), color var(--duree);
+}
+.carte-tete {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  padding: var(--e3) var(--e4);
+}
+.carte-num { font: 400 clamp(36px, 4vw, 56px)/0.9 var(--police-titre); letter-spacing: -0.03em; }
+.carte-vignette {
+  width: 100%;
+  aspect-ratio: 1;
+  border-top: var(--trait);
+  border-bottom: var(--trait);
+  background: rgba(var(--encre-rgb), 0.08);
+}
+.carte-vignette canvas { width: 100%; height: 100%; }
+.carte-corps { padding: var(--e3) var(--e4) var(--e4); display: grid; gap: var(--e1); }
+.carte-nom { font: 400 clamp(26px, 2.6vw, 34px)/1 var(--police-titre); text-transform: uppercase; letter-spacing: -0.02em; }
+.carte-desc { font-size: 15px; }
+.carte-libs { font: 400 11px/1.4 var(--police-mono); text-transform: uppercase; color: var(--attenue); margin-top: var(--e2); }
+.carte:hover, .carte:focus-visible { background: var(--encre); color: var(--fond); outline-offset: -6px; }
+.carte:hover .carte-libs, .carte:focus-visible .carte-libs { color: inherit; }
+
+.carte-export { display: none; }
+
+/* ---------- Modes d'affichage de l'accueil ----------
+   Même balisage pour tous les modes (voir app.js) : seul [data-affichage] change.
+   Les colonnes du Tableau sont un token, partagé avec la ligne d'en-tête pour rester alignées. */
+:root {
+  --colonnes-tableau: 64px 64px minmax(120px, 1.1fr) 120px minmax(0, 3fr) minmax(130px, 1.3fr) 130px;
+}
+
+/* Planche : vignettes seules, serrées, numéro incrusté et nom en bandeau.
+   auto-fill (pas auto-fit) : avec un filtre qui ne laisse que 1 ou 2 outils, les colonnes vides
+   gardent leur place et les vignettes restent petites, alors que auto-fit les étirait sur toute la largeur.
+   Le min de 10 % plafonne à 10 colonnes : les 10 outils tiennent sur une rangée sans colonne vide. */
+.grille-outils[data-affichage="planche"] {
+  grid-template-columns: repeat(auto-fill, minmax(max(min(100%, 170px), calc(10% - 1px)), 1fr));
+}
+[data-affichage="planche"] .carte { position: relative; }
+[data-affichage="planche"] .carte-tete {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 1;
+  padding: var(--e1) var(--e2);
+  background: var(--fond);
+  border-right: var(--trait-fin);
+  border-bottom: var(--trait-fin);
+}
+[data-affichage="planche"] .carte-tete .etiquette,
+[data-affichage="planche"] .carte-desc,
+[data-affichage="planche"] .carte-libs { display: none; }
+[data-affichage="planche"] .carte-num { font-size: 22px; }
+[data-affichage="planche"] .carte-vignette { border-top: 0; }
+[data-affichage="planche"] .carte-corps { padding: var(--e2) var(--e3); }
+[data-affichage="planche"] .carte-nom { font-size: 18px; }
+[data-affichage="planche"] .carte:hover .carte-tete,
+[data-affichage="planche"] .carte:focus-visible .carte-tete { background: var(--encre); }
+
+/* Liste : une ligne par outil, numéro | vignette | texte complet. */
+.grille-outils[data-affichage="liste"],
+.grille-outils[data-affichage="tableau"] { grid-template-columns: minmax(0, 1fr); }
+[data-affichage="liste"] .carte {
+  display: grid;
+  grid-template-columns: clamp(72px, 8vw, 120px) clamp(96px, 12vw, 168px) minmax(0, 1fr);
+}
+[data-affichage="liste"] .carte-tete {
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: var(--e2);
+}
+[data-affichage="liste"] .carte-vignette { border-top: 0; border-bottom: 0; border-left: var(--trait); border-right: var(--trait); }
+[data-affichage="liste"] .carte-corps { align-content: center; padding: var(--e3) var(--e5); }
+[data-affichage="liste"] .carte-desc { font-size: 16px; max-width: 70ch; }
+[data-affichage="liste"] .carte-libs { margin-top: var(--e1); }
+[data-affichage="liste"] .carte-export {
+  display: block;
+  font: 700 11px/1.4 var(--police-mono);
+  text-transform: uppercase;
+}
+
+/* Tableau : colonnes fixes ; les blocs de la carte « disparaissent » (display: contents)
+   pour que chaque information devienne une cellule de la grille. */
+.entete-tableau { display: none; }
+.entete-tableau.visible {
+  display: grid;
+  grid-template-columns: var(--colonnes-tableau);
+  border-bottom: var(--trait);
+  /* Même largeur utile que les lignes (qui portent une bordure droite) : colonnes alignées. */
+  border-right: var(--bord) solid transparent;
+  background: var(--encre);
+  color: var(--fond);
+}
+.entete-tableau span {
+  padding: var(--e2) var(--e3);
+  font: 700 11px/1.3 var(--police-mono);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+.entete-tableau span + span { border-left: var(--trait-fin) solid var(--fond); }
+[data-affichage="tableau"] .carte {
+  display: grid;
+  grid-template-columns: var(--colonnes-tableau);
+  align-items: stretch;
+}
+[data-affichage="tableau"] .carte-tete,
+[data-affichage="tableau"] .carte-corps { display: contents; }
+[data-affichage="tableau"] .carte-tete > *,
+[data-affichage="tableau"] .carte-corps > *,
+[data-affichage="tableau"] .carte-vignette {
+  grid-row: 1;
+  margin: 0;
+  padding: var(--e2) var(--e3);
+  display: flex;
+  align-items: center;
+  border-left: var(--trait-fin);
+}
+[data-affichage="tableau"] .carte-num { grid-column: 1; border-left: 0; font-size: 26px; }
+[data-affichage="tableau"] .carte-vignette { grid-column: 2; padding: var(--e1); border-top: 0; border-bottom: 0; aspect-ratio: auto; background: none; }
+[data-affichage="tableau"] .carte-vignette canvas { width: 54px; height: 54px; }
+[data-affichage="tableau"] .carte-nom { grid-column: 3; font-size: 20px; }
+[data-affichage="tableau"] .carte-tete .etiquette { grid-column: 4; }
+[data-affichage="tableau"] .carte-desc { grid-column: 5; font-size: 14px; }
+[data-affichage="tableau"] .carte-libs { grid-column: 6; color: inherit; }
+[data-affichage="tableau"] .carte-export { grid-column: 7; font: 700 11px/1.4 var(--police-mono); text-transform: uppercase; }
+
+.titre-section {
+  display: flex;
+  align-items: center;
+  gap: var(--e3);
+  font: 400 clamp(32px, 5vw, 64px)/1 var(--police-titre);
+  text-transform: uppercase;
+  letter-spacing: -0.03em;
+}
+.titre-section .num { font-size: 0.5em; min-height: 1.6em; }
+.prochainement { padding: var(--e6) var(--gouttiere); border-bottom: var(--trait); }
+.prochainement-note { margin: var(--e2) 0 var(--e5); font-family: var(--police-mono); font-size: 13px; color: var(--attenue); }
+.liste-idees {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 210px), 1fr));
+  border-top: var(--trait-fin);
+  border-left: var(--trait-fin);
+}
+.liste-idees li {
+  padding: var(--e2) var(--e3);
+  border-right: var(--trait-fin);
+  border-bottom: var(--trait-fin);
+}
+.liste-idees strong { display: block; font: 400 18px/1.1 var(--police-titre); text-transform: uppercase; }
+.liste-idees span { font-size: 13px; color: var(--attenue); }
+
+/* ---------- Vue outil ---------- */
+.outil-tete {
+  display: grid;
+  grid-template-columns: auto auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: var(--e4);
+  padding: var(--e4) var(--gouttiere);
+  border-bottom: var(--trait);
+}
+.outil-num { font: 400 clamp(44px, 6vw, 88px)/0.85 var(--police-titre); letter-spacing: -0.04em; }
+.outil-nom { font: 400 clamp(36px, 5vw, 72px)/0.9 var(--police-titre); text-transform: uppercase; letter-spacing: -0.03em; }
+.outil-desc { margin-top: var(--e1); }
+.outil-libs { font: 400 11px/1.5 var(--police-mono); text-transform: uppercase; text-align: right; color: var(--attenue); }
+
+/* Trois colonnes : raccourcis | aperçu | réglages. */
+.atelier {
+  display: grid;
+  grid-template-columns: var(--largeur-raccourcis) minmax(0, 1fr) var(--largeur-panneau);
+  align-items: start;
+}
+
+/* Colonne des raccourcis : collante comme l'aperçu, pour rester visible pendant le défilement du panneau. */
+/* Même hauteur minimale que .scene et contenu centré : la liste est alignée sur le milieu
+   de l'aperçu. Texte atténué : c'est une aide discrète, pas un élément à lire en premier. */
+.raccourcis {
+  position: sticky;
+  top: 0;
+  display: grid;
+  align-content: center;
+  gap: var(--e3);
+  min-height: min(86vh, 1000px);
+  padding: var(--e4) var(--e3);
+  border-right: var(--trait);
+  color: var(--attenue);
+}
+.raccourcis kbd { border-color: rgba(var(--encre-rgb), 0.35); }
+.raccourcis-titre {
+  font: 400 18px/1 var(--police-titre);
+  text-transform: uppercase;
+  padding-bottom: var(--e2);
+  border-bottom: var(--bord-fin) solid rgba(var(--encre-rgb), 0.35);
+}
+.raccourcis-liste { margin: 0; display: grid; gap: var(--e1); }
+.raccourcis-liste > div {
+  display: grid;
+  gap: 2px;
+  padding: var(--e1) var(--e2);
+  border: var(--bord-fin) solid transparent;
+  transition: background var(--duree), color var(--duree);
+}
+.raccourcis-liste dt { margin: 0; }
+.raccourcis-liste dt kbd { font-size: 12px; padding: 1px 0.45em; }
+.raccourcis-liste dd { margin: 0; font-size: 13px; line-height: 1.25; }
+.raccourcis-titre { display: flex; align-items: center; gap: var(--e2); }
+.raccourcis-titre .icone { width: 20px; height: 20px; flex: none; }
+/* Touche utilisée : la ligne s'allume (accent), retour à la normale juste après. */
+.raccourcis-liste > div.actif { background: var(--accent); color: var(--sur-accent); border-color: var(--encre); }
+.raccourcis-liste > div.actif kbd { border-color: currentColor; }
+.raccourcis-note { font: 400 11px/1.4 var(--police-mono); color: rgba(var(--encre-rgb), 0.5); }
+.scene {
+  position: sticky;
+  top: 0;
+  display: grid;
+  place-items: center;
+  gap: var(--e2);
+  min-height: min(86vh, 1000px);
+  padding: var(--gouttiere);
+  border-right: var(--trait);
+}
+.scene-cadre {
+  /* La taille vient du canvas (dimensionné en JS selon le format) : le cadre l'épouse. */
+  width: auto;
+  border: var(--trait);
+  box-shadow: var(--ombre);
+  /* Damier fonctionnel : rend visible la transparence du fond. */
+  background-color: var(--fond);
+  background-image:
+    linear-gradient(45deg, var(--damier) 25%, transparent 25%, transparent 75%, var(--damier) 75%),
+    linear-gradient(45deg, var(--damier) 25%, transparent 25%, transparent 75%, var(--damier) 75%);
+  background-size: 20px 20px;
+  background-position: 0 0, 10px 10px;
+}
+/* Nouvelle composition au lancement d'un outil : balayage de haut en bas en 8 paliers francs
+   (pas de fondu), court. Coupé par prefers-reduced-motion comme toutes les animations. */
+.scene-cadre.revele canvas { animation: reveler 320ms steps(8, end); }
+@keyframes reveler {
+  from { clip-path: inset(0 0 100% 0); }
+  to { clip-path: inset(0 0 0 0); }
+}
+.scene-etat { min-height: 1.4em; font: 400 12px/1.4 var(--police-mono); text-transform: uppercase; color: var(--attenue); }
+
+.panneau { display: flex; flex-direction: column; }
+.panneau-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--e2);
+  padding: var(--e4);
+  border-bottom: var(--trait);
+}
+.panneau-actions #b-regenerer { grid-column: 1 / -1; min-height: 56px; font-size: 16px; }
+.bloc { padding: var(--e4); border-bottom: var(--trait); display: grid; gap: var(--e3); }
+.bloc-titre {
+  display: flex;
+  align-items: center;
+  gap: var(--e2);
+  font: 400 20px/1 var(--police-titre);
+  text-transform: uppercase;
+}
+.bloc-titre .num { font-size: 12px; min-height: 22px; }
+.sous-titre { font: 700 12px/1.2 var(--police-mono); text-transform: uppercase; margin-top: var(--e2); }
+
+/* ---------- Contrôles ---------- */
+.controles { display: grid; gap: var(--e3); }
+.ctl { display: grid; gap: var(--e1); }
+.ctl-entete {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--e2);
+  font: 700 12px/1.3 var(--police-mono);
+  text-transform: uppercase;
+}
+.ctl-valeur { font-weight: 400; }
+.ctl-toggle { grid-template-columns: 1fr auto; align-items: center; }
+.ctl-toggle .ctl-entete { justify-content: flex-start; }
+
+input[type="range"] {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 28px;
+  margin: 0;
+  background: transparent;
+  cursor: pointer;
+}
+input[type="range"]::-webkit-slider-runnable-track { height: 10px; border: var(--trait-fin); background: var(--fond); }
+input[type="range"]::-moz-range-track { height: 6px; border: var(--trait-fin); background: var(--fond); }
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 18px; height: 26px;
+  margin-top: -10px;
+  border: var(--trait-fin);
+  border-radius: 0;
+  background: var(--encre);
+}
+input[type="range"]::-moz-range-thumb { width: 14px; height: 22px; border: var(--trait-fin); border-radius: 0; background: var(--encre); }
+input[type="range"]:focus-visible { outline-offset: 0; }
+input[type="range"]:hover::-webkit-slider-thumb { background: var(--accent); }
+input[type="range"]:hover::-moz-range-thumb { background: var(--accent); }
+
+select, input[type="text"], input[type="number"] {
+  width: 100%;
+  min-height: 40px;
+  padding: var(--e1) var(--e2);
+  border: var(--trait-fin);
+  border-radius: 0;
+  background: var(--fond);
+  color: var(--encre);
+  font: 400 14px/1.2 var(--police-mono);
+}
+select { cursor: pointer; }
+
+/* Interrupteur : case native restylée (reste une vraie case pour le clavier et l'ARIA). */
+.interrupteur {
+  -webkit-appearance: none;
+  appearance: none;
+  flex: none;
+  width: 44px; height: 24px;
+  margin: 0;
+  border: var(--trait-fin);
+  background: var(--fond);
+  position: relative;
+  cursor: pointer;
+}
+.interrupteur::after {
+  content: "";
+  position: absolute;
+  top: 2px; left: 2px;
+  width: 16px; height: 16px;
+  background: var(--encre);
+  transition: transform var(--duree);
+}
+.interrupteur:checked { background: var(--accent); }
+.interrupteur:checked::after { transform: translateX(20px); background: var(--sur-accent); }
+.case { display: inline-flex; align-items: center; gap: var(--e2); font: 700 12px/1.2 var(--police-mono); text-transform: uppercase; cursor: pointer; }
+
+.seed-ligne { display: grid; grid-template-columns: minmax(0, 1fr) auto auto; gap: var(--e2); }
+/* Pas de text-transform : la seed est sensible à la casse, l'afficher en capitales tromperait la recopie. */
+.seed-ligne input { font-size: 18px; font-weight: 700; letter-spacing: 0.08em; }
+
+.nuancier { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: var(--e2); }
+.nuance { display: grid; gap: var(--e1); }
+.nuance input[type="color"] {
+  width: 100%;
+  aspect-ratio: 1;
+  height: auto;
+  padding: 0;
+  border: var(--trait-fin);
+  border-radius: 0;
+  background: none;
+  cursor: pointer;
+}
+.nuance input[type="color"]::-webkit-color-swatch-wrapper { padding: 0; }
+.nuance input[type="color"]::-webkit-color-swatch { border: 0; border-radius: 0; }
+.nuance input[type="color"]::-moz-color-swatch { border: 0; border-radius: 0; }
+.nuance-role { font: 400 10px/1 var(--police-mono); text-transform: uppercase; text-align: center; }
+.nuance .bouton { min-height: 28px; padding: 0; font-size: 10px; }
+.palette-actions { display: flex; flex-wrap: wrap; align-items: center; gap: var(--e2); }
+
+.format-perso { display: flex; flex-wrap: wrap; align-items: center; gap: var(--e2); font: 700 12px var(--police-mono); }
+.format-perso label { display: inline-flex; align-items: center; gap: var(--e1); }
+.format-perso input { width: 96px; }
+
+.historique-actions { display: flex; flex-wrap: wrap; gap: var(--e2); }
+.historique {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: var(--e1);
+}
+.historique:empty { display: none; }
+.historique li { position: relative; }
+.historique button.vignette {
+  display: block;
+  width: 100%;
+  aspect-ratio: 1;
+  padding: 0;
+  border: var(--trait-fin);
+  background: rgba(var(--encre-rgb), 0.08);
+  cursor: pointer;
+}
+.historique button.vignette img { display: block; width: 100%; height: 100%; object-fit: cover; }
+.historique button.vignette[aria-current="true"] { border-color: var(--accent); box-shadow: 0 0 0 var(--bord-fin) var(--accent); }
+.historique button.vignette:hover { transform: translate(-2px, -2px); box-shadow: var(--ombre-petite); }
+.historique .retirer {
+  position: absolute;
+  top: 0; right: 0;
+  width: 20px; height: 20px;
+  padding: 0;
+  border: 0;
+  background: var(--encre);
+  color: var(--fond);
+  font: 700 12px/1 var(--police-mono);
+  cursor: pointer;
+}
+
+
+/* ---------- Modale d'export ---------- */
+.modale {
+  width: min(520px, calc(100vw - 32px));
+  padding: 0;
+  border: var(--trait);
+  border-radius: 0;
+  background: var(--fond);
+  color: var(--encre);
+  box-shadow: 10px 10px 0 var(--encre);
+}
+.modale::backdrop { background: rgba(var(--encre-rgb), 0.55); }
+.modale-corps { display: grid; gap: var(--e4); padding: var(--e5); }
+.modale-tete { display: flex; justify-content: space-between; align-items: center; gap: var(--e3); }
+.modale-tete h2 { font: 400 36px/1 var(--police-titre); text-transform: uppercase; }
+.export-types { display: flex; flex-wrap: wrap; gap: var(--e2); margin: 0; padding: 0; border: 0; }
+.export-types legend { margin-bottom: var(--e2); }
+.choix {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--e2);
+  min-height: 44px;
+  padding: var(--e2) var(--e4);
+  border: var(--trait-fin);
+  font: 700 14px var(--police-mono);
+  cursor: pointer;
+}
+.choix input { accent-color: var(--encre); }
+.choix:has(input:checked) { background: var(--encre); color: var(--fond); }
+.choix:has(input:focus-visible) { outline: var(--bord) solid var(--accent); outline-offset: 2px; }
+.export-resume { font: 400 14px/1.5 var(--police-mono); }
+.progression { display: grid; gap: var(--e2); }
+.progression-barre { height: 22px; border: var(--trait-fin); }
+.progression-barre span { display: block; height: 100%; width: 0; background: var(--accent); }
+/* Étape sans avancement mesurable (rendu synchrone) : rayures qui défilent. */
+.progression-barre.indetermine span {
+  width: 100%;
+  background: repeating-linear-gradient(-45deg, var(--accent) 0 10px, transparent 10px 20px);
+  background-size: 28px 28px;
+  animation: defile 0.6s linear infinite;
+}
+@keyframes defile { to { background-position: 28px 0; } }
+#export-etape { font: 700 12px var(--police-mono); text-transform: uppercase; }
+
+/* ---------- Sans JS ---------- */
+.sans-js { padding: var(--e6) var(--gouttiere); display: grid; gap: var(--e4); max-width: 70ch; }
+.sans-js h1 { font: 400 clamp(36px, 6vw, 72px)/0.95 var(--police-titre); text-transform: uppercase; }
+.sans-js ol { margin: 0; padding-left: 1.4em; display: grid; gap: var(--e1); }
+
+/* ---------- Responsive ---------- */
+@media (max-width: 900px) {
+  .accueil-tete { grid-template-columns: 1fr; }
+  .outil-tete { grid-template-columns: auto minmax(0, 1fr); }
+  .outil-tete .bouton-retour { grid-column: 1 / -1; justify-self: start; }
+  .outil-libs { grid-column: 1 / -1; text-align: left; }
+  .atelier { grid-template-columns: minmax(0, 1fr); }
+  /* Écran étroit = le plus souvent tactile, sans clavier : la colonne des raccourcis prendrait la place de l'aperçu. */
+  .raccourcis { display: none; }
+  .scene { position: static; min-height: 0; border-right: 0; border-bottom: var(--trait); }
+}
+/* Moins de 1100 px : trois colonnes laisseraient trop peu de place à l'aperçu. */
+@media (max-width: 1100px) {
+  .atelier { grid-template-columns: minmax(0, 1fr) var(--largeur-panneau); }
+  .raccourcis { display: none; }
+}
+
+/* Tableau trop étroit : on garde N°, aperçu, nom et famille ; le reste est dans la fiche outil. */
+@media (max-width: 760px) {
+  :root { --colonnes-tableau: 48px 64px minmax(0, 1fr) auto; }
+  .entete-tableau span:nth-child(n + 5),
+  [data-affichage="tableau"] .carte-desc,
+  [data-affichage="tableau"] .carte-libs,
+  [data-affichage="tableau"] .carte-export { display: none; }
+  [data-affichage="liste"] .carte { grid-template-columns: 64px 96px minmax(0, 1fr); }
+  [data-affichage="liste"] .carte-corps { padding: var(--e2) var(--e3); }
+  [data-affichage="liste"] .carte-desc { font-size: 14px; }
+}
+
+@media (max-width: 520px) {
+  .filtre-recherche { border-right: 0; border-bottom: var(--trait); }
+  /* Titre de groupe au-dessus des boutons plutôt qu'à gauche : plus de place pour les boutons. */
+  .filtre-groupe { flex-direction: column; }
+  .filtre-titre { flex: none; padding: var(--e2) var(--gouttiere); border-right: 0; border-bottom: var(--trait); }
+  .filtre-familles .bouton,
+  .filtre-affichage .bouton { min-height: 48px; }
+  /* Affichage : icône seule ; le libellé reste lu par les lecteurs d'écran. */
+  .filtre-affichage .libelle {
+    position: absolute;
+    width: 1px; height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+  }
+  .barre-info { display: none; }
+  .barre { justify-content: space-between; }
+  .nuancier { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .seed-ligne { grid-template-columns: 1fr 1fr; }
+  .seed-ligne input { grid-column: 1 / -1; }
+  .panneau-actions kbd, .historique-actions kbd { display: none; }
+}
+
+/* Mouvement réduit : on coupe les transitions et animations, pas seulement on les ralentit. */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { transition: none !important; animation: none !important; }
+  .bouton:active, .historique button.vignette:hover { transform: none; }
+}

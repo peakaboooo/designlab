@@ -1,0 +1,15 @@
+Licences des éléments tiers redistribués dans vendor/ (versions figées)
+
+p5.js 1.11.13 ............ vendor/p5.min.js ............ LGPL 2.1 ... p5.js-LGPL-2.1.txt
+Paper.js 0.12.18 ......... vendor/paper-core.min.js .... MIT ........ paper.js-MIT.txt
+d3-delaunay 6.0.4 ........ vendor/d3-delaunay.min.js ... ISC ........ d3-delaunay-ISC.txt
+chroma.js 2.6.0 .......... vendor/chroma.min.js ........ BSD ........ chroma.js-BSD.txt
+Carbon Icons 11.90.0 ..... vendor/icons/ ............... Apache 2.0 . vendor/icons/carbon/LICENSE
+Space Grotesk ............ vendor/fonts/ ............... OFL 1.1 .... polices-space-grotesk-OFL.txt
+Space Mono ............... vendor/fonts/ ............... OFL 1.1 .... polices-space-mono-OFL.txt
+Archivo Black ............ vendor/fonts/ ............... OFL 1.1 .... polices-archivo-black-OFL.txt
+Instrument Serif ......... vendor/fonts/ ............... OFL 1.1 .... polices-instrument-serif-OFL.txt
+Dela Gothic One .......... vendor/fonts/ ............... OFL 1.1 .... polices-dela-gothic-one-OFL.txt
+
+Polices : fichiers Fontsource 5.3.0 (sous-ensemble latin), aussi embarqués en base64 dans vendor/fonts/fonts.css.
+p5.js (LGPL) est utilisé tel quel, non modifié, dans un fichier séparé remplaçable.
