@@ -12,10 +12,12 @@ Chaque images est possède une seed, tu peux la partager à n'importe qui il obt
 |---|---|
 | Pixel et glitch | 01 Oddgrid · 10 Fold · 20 Static |
 | Paysages et matières | 02 Terrain · 09 Vein (SVG) · 12 Strate · 15 Shibori |
-| Lignes et op-art | 03 Filament · 05 Warp · 13 Moiré (SVG) · 16 Weave · 18 Rise (SVG) |
-| Papier et affiches | 06 Riso · 08 Specimen · 14 Origami |
-| Motifs et géométrie | 11 Arabesque · 17 Relief · 19 Dahlia |
-| Couleur et trames | 04 Aura · 07 Benday |
+| Lignes et op-art | 03 Filament · 05 Warp · 13 Moiré (SVG) · 16 Weave · 18 Rise (SVG) · 22 Optic |
+| Papier et affiches | 06 Riso · 08 Specimen · 14 Origami · 21 Modular (SVG) |
+| Motifs et géométrie | 11 Arabesque · 17 Relief · 19 Dahlia · 24 Tokens (SVG) |
+| Couleur et trames | 04 Aura · 07 Benday · 25 Sonar · 29 Blot |
+| Typo | 23 Cipher (SVG) · 28 Smear · 30 Ransom |
+| Éléments à composer | 26 Gloop (SVG) · 27 Planche (SVG) |
  
 ## Comment ça marche
  

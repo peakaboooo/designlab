@@ -6,12 +6,7 @@
   var DL = (window.DL = window.DL || {});
 
   // Familles techniques affichées en filtre sur l'accueil. L'ordre ici est l'ordre des boutons.
-  DL.familles = {
-    pixel: 'Pixel',
-    champ: 'Champ',
-    degrade: 'Dégradé',
-    motif: 'Motif',
-    impression: 'Impression',
+  DL.familles = {pixel: 'Pixel',hamp: 'Champ',degrade: 'Dégradé',motif: 'Motif',impression: 'Impression',
     typo: 'Typo',
     vecteur: 'Vecteur',
     textile: 'Textile',
@@ -23,13 +18,10 @@
   DL.prochainement = [
     ['Quilt', 'Couvertures en pixels'],
     ['Zig', 'Zigzags arrondis'],
-    ['Tokens', 'Jeux de badges géométriques'],
     ['Vee', 'Chevrons miroir'],
     ['Fete', 'Patchs de festival'],
     ['Parcel', 'Affiches de colis en pixels'],
     ['Stipple', 'Portraits en demi-teinte'],
-    ['Modular', 'Affiches en grille modulaire'],
-    ['Optic', 'Rayures à contre-changement'],
     ['Prism', "Fonds d'aurore en pixels"],
     ['Delta', 'Mosaïques satellite corrompues'],
     ['Mist', 'Lavis néon pulvérisés'],
@@ -39,7 +31,6 @@
     ['Kiosk', 'Affiches typographiques collées'],
     ['Mosh', 'Signal corrompu'],
     ['Pane', 'Panneaux dégradés'],
-    ['Sonar', 'Masses terrestres tramées'],
     ['Bloom', 'Champs de pixels symétriques'],
     ['Sear', 'Champs thermiques étalés'],
     ['Carve', 'Collages de panneaux sculptés'],
@@ -55,7 +46,6 @@
     ['Hiss', 'Neige de télévision'],
     ['Stitch', 'Grilles glitchées'],
     ['Coral', "Textile d'éventails marins"],
-    ['Cipher', 'Grilles de glyphes'],
     ['Motley', 'Patchwork de glyphes'],
     ['Crowd', 'Foules floutées']
   ];
