@@ -38,6 +38,20 @@
   --duree: 90ms;
   --damier: rgba(var(--encre-rgb), 0.12);
 
+  /* Bannière de l'accueil : seule exception assumée au « pas de dégradé ». Rouge, rose, bleu
+     sur un fond crème ; les taches se mélangent en « produit » (bleu + rose = violet), comme
+     des encres. L'encre du texte y reste sombre pour le contraste. */
+  --banniere-base: #F3EDE8;
+  --banniere-rouge: #FF6A55;
+  --banniere-rose: #FF9DCB;
+  --banniere-bleu: #7D93FF;
+  --banniere-melange: multiply;
+  /* Intensité globale des taches (0 = fond seul, 1 = couleurs pleines). */
+  --banniere-intensite: 0.28;
+  --banniere-encre: #141414;
+  --banniere-encre-rgb: 20, 20, 20;
+  --banniere-grain: 1;
+
   color-scheme: light;
 }
 
@@ -48,6 +62,15 @@
     --fond-rgb: 20, 20, 20;
     --encre: #EDEBE4;
     --encre-rgb: 237, 235, 228;
+    --banniere-base: #120E14;
+    --banniere-rouge: #B8281C;
+    --banniere-rose: #A12E6E;
+    --banniere-bleu: #2A3CB8;
+    --banniere-melange: screen;
+    --banniere-intensite: 0.28;
+    --banniere-encre: #EDEBE4;
+    --banniere-encre-rgb: 237, 235, 228;
+    --banniere-grain: 0.4;
     color-scheme: dark;
   }
 }
@@ -56,6 +79,15 @@
   --fond-rgb: 20, 20, 20;
   --encre: #EDEBE4;
   --encre-rgb: 237, 235, 228;
+  --banniere-base: #120E14;
+  --banniere-rouge: #B8281C;
+  --banniere-rose: #A12E6E;
+  --banniere-bleu: #2A3CB8;
+  --banniere-melange: screen;
+  --banniere-intensite: 0.28;
+  --banniere-encre: #EDEBE4;
+  --banniere-encre-rgb: 237, 235, 228;
+  --banniere-grain: 0.4;
   color-scheme: dark;
 }
 
@@ -214,6 +246,103 @@ canvas { display: block; }
   gap: var(--e5);
   padding: var(--e6) var(--gouttiere) var(--e5);
   border-bottom: var(--trait);
+  /* Bannière : taches pâles qui dérivent façon lampe à lave (.banniere-lave) sur un fond
+     presque neutre, puis un grain en surimpression (::before). Tout en CSS : nette à toute
+     largeur, aucun fichier image, fonctionne en file://. L'encre locale suit la bannière. */
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  --encre: var(--banniere-encre);
+  --encre-rgb: var(--banniere-encre-rgb);
+  --attenue: rgba(var(--encre-rgb), 0.72);
+  color: var(--encre);
+  background: var(--banniere-base);
+}
+/* Lampe à lave : chaque tache suit son propre parcours, avec une durée différente (nombres
+   premiers) : les trajets ne se recalent presque jamais, le mouvement paraît aléatoire.
+   Seul transform est animé (composité par le GPU, aucun recalcul de mise en page).
+   prefers-reduced-motion fige tout (règle globale en fin de fichier). */
+.banniere-lave {
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+  opacity: var(--banniere-intensite);
+  pointer-events: none;
+}
+.banniere-lave span {
+  position: absolute;
+  width: 62%;
+  height: 170%;
+  background: radial-gradient(closest-side, var(--c) 0%, var(--c) 30%, transparent 100%);
+  mix-blend-mode: var(--banniere-melange);
+  will-change: transform;
+  animation: var(--anim) var(--duree-lave) ease-in-out infinite alternate;
+}
+/* Six taches : une grande par couleur (bleu à gauche, rose au centre, rouge à droite) pour que
+   chaque teinte ait sa zone, plus trois petites qui traversent et créent les mélanges. Aucune petite tache bleue à droite :
+   bleu × rouge en « produit » donne un violet foncé où le texte d'intro deviendrait illisible. */
+.banniere-lave span:nth-child(1) { --c: var(--banniere-bleu);  left: -12%; top: -50%; --anim: lave-a; --duree-lave: 59s; }
+.banniere-lave span:nth-child(2) { --c: var(--banniere-rouge); left: 56%;  top: -55%; --anim: lave-b; --duree-lave: 67s; }
+.banniere-lave span:nth-child(3) { --c: var(--banniere-rose);  left: 22%;  top: -5%;  --anim: lave-c; --duree-lave: 79s; }
+.banniere-lave span:nth-child(4) { --c: var(--banniere-rose);   left: 68%;  top: 25%;  --anim: lave-d; --duree-lave: 89s; width: 34%; height: 110%; }
+.banniere-lave span:nth-child(5) { --c: var(--banniere-rouge); left: 2%;   top: 40%;  --anim: lave-e; --duree-lave: 71s; width: 30%; height: 95%; }
+.banniere-lave span:nth-child(6) { --c: var(--banniere-rose);  left: 82%;  top: -30%; --anim: lave-f; --duree-lave: 83s; width: 28%; height: 100%; }
+@keyframes lave-a {
+  0%   { transform: translate(0, 0) scale(1); }
+  30%  { transform: translate(18%, 16%) scale(1.12); }
+  65%  { transform: translate(6%, 30%) scale(0.92); }
+  100% { transform: translate(26%, 8%) scale(1.05); }
+}
+@keyframes lave-b {
+  0%   { transform: translate(0, 0) scale(1.05); }
+  40%  { transform: translate(-24%, 26%) scale(0.9); }
+  70%  { transform: translate(-10%, 8%) scale(1.15); }
+  100% { transform: translate(-32%, 30%) scale(1); }
+}
+@keyframes lave-c {
+  0%   { transform: translate(0, 0) scale(0.95); }
+  35%  { transform: translate(26%, -24%) scale(1.1); }
+  75%  { transform: translate(-14%, -12%) scale(1); }
+  100% { transform: translate(14%, -30%) scale(1.15); }
+}
+@keyframes lave-d {
+  0%   { transform: translate(0, 0) scale(1); }
+  45%  { transform: translate(-90%, -40%) scale(1.25); }
+  100% { transform: translate(-40%, -60%) scale(0.85); }
+}
+@keyframes lave-e {
+  0%   { transform: translate(0, 0) scale(0.9); }
+  50%  { transform: translate(120%, -50%) scale(1.2); }
+  100% { transform: translate(60%, -80%) scale(1); }
+}
+@keyframes lave-f {
+  0%   { transform: translate(0, 0) scale(1.1); }
+  40%  { transform: translate(-110%, 60%) scale(0.85); }
+  100% { transform: translate(-160%, 20%) scale(1.15); }
+}
+/* Curseur d'intensité, en haut à droite de la bannière : petit, à l'encre de la bannière,
+   hors de la grille (position absolue) pour ne pas déplacer le titre ni l'intro. */
+.banniere-reglage {
+  position: absolute;
+  top: var(--e3);
+  right: var(--gouttiere);
+  display: grid;
+  gap: var(--e1);
+  width: clamp(150px, 16vw, 210px);
+}
+.banniere-reglage .etiquette { display: flex; justify-content: space-between; gap: var(--e2); }
+.banniere-reglage output { font: inherit; }
+/* Grain : bruit fractal SVG en niveaux de gris, mélangé en « overlay » sur le dégradé. */
+.accueil-tete::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  opacity: var(--banniere-grain);
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)'/%3E%3C/svg%3E");
+  background-size: 220px 220px;
 }
 .accueil-titre { --taille-titre-geant: clamp(56px, 13vw, 210px); }
 .titre-geant {
@@ -755,6 +884,8 @@ select { cursor: pointer; }
 /* ---------- Responsive ---------- */
 @media (max-width: 900px) {
   .accueil-tete { grid-template-columns: 1fr; }
+  /* Une colonne : le curseur reprend sa place dans le flux, sous l'intro, sans chevaucher le titre. */
+  .banniere-reglage { position: static; order: 3; width: min(100%, 260px); }
   .outil-tete { grid-template-columns: auto minmax(0, 1fr); }
   .outil-tete .bouton-retour { grid-column: 1 / -1; justify-self: start; }
   .outil-libs { grid-column: 1 / -1; text-align: left; }
@@ -807,5 +938,9 @@ select { cursor: pointer; }
 /* Mouvement réduit : on coupe les transitions et animations, pas seulement on les ralentit. */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { transition: none !important; animation: none !important; }
+  /* Exception voulue par l'autrice : la bannière lave bouge partout, y compris sous Windows
+     avec « Effets d'animation » désactivé. Dérive très lente (59 à 89 s), sans clignotement ni
+     déplacement de contenu. Sélecteur plus spécifique que * : il l'emporte malgré !important. */
+  .banniere-lave span { animation: var(--anim) var(--duree-lave) ease-in-out infinite alternate !important; }
   .bouton:active, .historique button.vignette:hover { transform: none; }
 }

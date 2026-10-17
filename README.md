@@ -30,6 +30,7 @@ Chaque images est possède une seed, tu peux la partager à n'importe qui il obt
 Les bibliothèques et polices sont embarquées dans `vendor/`, chacune avec sa licence dans `vendor/licences/` :
  
 - **Bibliothèques** : p5.js (LGPL 2.1), Paper.js (MIT), d3-delaunay (ISC), chroma.js (BSD), icônes Carbon d'IBM (Apache 2.0)
+- **Cartes** (outil Sonar) : contours des terres Natural Earth 1:50m (domaine public), via world-atlas (ISC)
 - **Polices** : Space Grotesk, Space Mono, Archivo Black, Instrument Serif et Dela Gothic One (SIL Open Font License)
 - **Logo** : GL Studio
  

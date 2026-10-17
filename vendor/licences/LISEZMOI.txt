@@ -10,6 +10,9 @@ Space Mono ............... vendor/fonts/ ............... OFL 1.1 .... polices-sp
 Archivo Black ............ vendor/fonts/ ............... OFL 1.1 .... polices-archivo-black-OFL.txt
 Instrument Serif ......... vendor/fonts/ ............... OFL 1.1 .... polices-instrument-serif-OFL.txt
 Dela Gothic One .......... vendor/fonts/ ............... OFL 1.1 .... polices-dela-gothic-one-OFL.txt
+Natural Earth 1:50m ...... vendor/geo/terres.js ........ domaine public (naturalearthdata.com)
+world-atlas 2.0.2 ........ vendor/geo/terres.js ........ ISC ........ world-atlas-ISC.txt
 
 Polices : fichiers Fontsource 5.3.0 (sous-ensemble latin), aussi embarqués en base64 dans vendor/fonts/fonts.css.
 p5.js (LGPL) est utilisé tel quel, non modifié, dans un fichier séparé remplaçable.
+Contours des terres (Sonar) : Natural Earth « land » 1:50m via world-atlas, simplifiés et réencodés par vendor/geo/generer-terres.js.

@@ -94,7 +94,7 @@
           <li><a href="#/optic">22 Optic</a> : rayures à contre-changement</li>
           <li><a href="#/cipher">23 Cipher</a> : grilles de glyphes inventés, export SVG</li>
           <li><a href="#/tokens">24 Tokens</a> : jeux de badges géométriques, export SVG</li>
-          <li><a href="#/sonar">25 Sonar</a> : masses terrestres tramées</li>
+          <li><a href="#/sonar">25 Sonar</a> : masses terrestres tramées, imaginaires ou réelles (monde, continents)</li>
           <li><a href="#/gloop">26 Gloop</a> : formes liquides en métaballes, export SVG</li>
           <li><a href="#/planche">27 Planche</a> : planche d'autocollants, export SVG</li>
           <li><a href="#/smear">28 Smear</a> : mot étiré le long d'une trajectoire</li>
@@ -107,6 +107,12 @@
     <!-- Accueil -->
     <section class="vue" id="vue-accueil" hidden aria-labelledby="titre-accueil">
       <div class="accueil-tete">
+        <div class="banniere-lave" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span><span></span></div>
+        <!-- Réglage de l'intensité du fond : masqué sans JS (il n'aurait aucun effet). -->
+        <label class="banniere-reglage" hidden>
+          <span class="etiquette"><span>Intensité du fond</span><span><output id="banniere-valeur">28</output>&nbsp;%</span></span>
+          <input type="range" id="banniere-intensite" min="0" max="100" step="1" value="28">
+        </label>
         <div class="accueil-titre">
           <h1 id="titre-accueil" class="titre-geant">Lab<br>Design</h1>
           <p class="titre-signature">Par gappy.</p>
@@ -317,6 +323,7 @@
   <script defer src="js/tools/optic.js"></script>
   <script defer src="js/tools/cipher.js"></script>
   <script defer src="js/tools/tokens.js"></script>
+  <script defer src="vendor/geo/terres.js"></script>
   <script defer src="js/tools/sonar.js"></script>
   <script defer src="js/tools/gloop.js"></script>
   <script defer src="js/tools/planche.js"></script>

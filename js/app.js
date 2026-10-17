@@ -30,6 +30,37 @@
   });
   majBoutonTheme();
 
+  /* ---------- Intensité du fond de la bannière ----------
+     Le curseur écrit --banniere-intensite sur la bannière elle-même : la valeur l'emporte sur
+     celles des thèmes (posées sur :root) et vaut pour les deux thèmes. Choix mémorisé ; sans
+     choix, le curseur affiche la valeur par défaut du thème courant. */
+  (function () {
+    var curseur = $('banniere-intensite'), sortie = $('banniere-valeur');
+    var tete = document.querySelector('.accueil-tete');
+    if (!curseur || !sortie || !tete) return;
+    function afficher(v) { curseur.value = v; sortie.textContent = v; }
+    function appliquer(v) {
+      tete.style.setProperty('--banniere-intensite', String(v / 100));
+      afficher(v);
+    }
+    var memo = DL.lire('dl:banniere-intensite', null);
+    if (typeof memo === 'number' && memo >= 0 && memo <= 100) appliquer(memo);
+    // Sans choix mémorisé, on n'écrit rien : chaque thème garde sa propre valeur par défaut.
+    else afficher(Math.round(parseFloat(getComputedStyle(tete).getPropertyValue('--banniere-intensite')) * 100) || 28);
+    curseur.addEventListener('input', function () {
+      var v = Math.round(Number(curseur.value));
+      appliquer(v);
+      DL.stocker('dl:banniere-intensite', v);
+    });
+    // Changement de thème sans choix mémorisé : le curseur suit la valeur par défaut du nouveau thème.
+    // (Écouteur ajouté après celui du thème : il s'exécute une fois le thème changé.)
+    $('bouton-theme').addEventListener('click', function () {
+      if (tete.style.getPropertyValue('--banniere-intensite')) return;
+      afficher(Math.round(parseFloat(getComputedStyle(tete).getPropertyValue('--banniere-intensite')) * 100) || 28);
+    });
+    curseur.closest('.banniere-reglage').hidden = false;
+  })();
+
   /* ---------- Icônes (Carbon, IBM, Apache 2.0, embarquées dans vendor/icons/carbon-icons.js) ----------
      DL.icone(nom) renvoie un <svg> décoratif (aria-hidden) : le texte du bouton reste le libellé lu.
      Les chaînes viennent du fichier vendor généré, pas de l'utilisateur : innerHTML sans risque.
@@ -624,7 +655,7 @@
       if (id) history.replaceState(null, '', '#/');
       V.jeton++;
       V.outil = null;
-      document.title = 'Lab Design · 20 générateurs visuels, par gappy';
+      document.title = 'Lab Design · ' + DL.outils.length + ' générateurs visuels, par gappy';
       $('vue-outil').hidden = true;
       $('vue-accueil').hidden = false;
       construireAccueil();
