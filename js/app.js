@@ -10,17 +10,32 @@
   var APERCU_MAX = 1100;        // plus grand côté de l'aperçu, en pixels de rendu
   var VIGNETTE_HISTO = 120;     // vignettes de l'historique / favoris
 
-  /* ---------- Thème ---------- */
+  /* ---------- Icônes (Carbon, IBM, Apache 2.0, embarquées dans vendor/icons/carbon-icons.js) ----------
+     DL.icone(nom) renvoie un <svg> décoratif (aria-hidden) : le texte du bouton reste le libellé lu.
+     Les chaînes viennent du fichier vendor généré, pas de l'utilisateur : innerHTML sans risque.
+     Icône inconnue ou fichier absent → chaîne vide, le bouton garde son texte. */
+  DL.icone = function (nom) {
+    var dessin = window.DL_ICONES && window.DL_ICONES[nom];
+    if (!dessin) return '';
+    return '<svg class="icone" viewBox="0 0 32 32" fill="currentColor" aria-hidden="true" focusable="false">' + dessin + '</svg>';
+  };
+  // Balisage statique : data-icone="nom" place l'icône en tête de l'élément.
+  document.querySelectorAll('[data-icone]').forEach(function (n) {
+    n.insertAdjacentHTML('afterbegin', DL.icone(n.getAttribute('data-icone')));
+  });
+
+  /* ---------- Thème ----------
+     Sombre par défaut (logiciel de retouche) ; le clair n'existe que s'il a été choisi. */
   function themeCourant() {
-    var t = document.documentElement.getAttribute('data-theme');
-    if (t) return t;
-    return window.matchMedia && matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    return document.documentElement.getAttribute('data-theme') === 'light' ? 'light' : 'dark';
   }
   function majBoutonTheme() {
     var b = $('bouton-theme');
     var sombre = themeCourant() === 'dark';
     b.setAttribute('aria-pressed', String(sombre));
-    b.textContent = sombre ? 'Thème clair' : 'Thème sombre';
+    // L'icône montre le thème vers lequel on bascule, comme le libellé.
+    b.innerHTML = DL.icone(sombre ? 'sun' : 'moon');
+    b.appendChild(DL.el('span', { classe: 'libelle', texte: sombre ? 'Thème clair' : 'Thème sombre' }));
   }
   $('bouton-theme').addEventListener('click', function () {
     var t = themeCourant() === 'dark' ? 'light' : 'dark';
@@ -38,7 +53,7 @@
     var curseur = $('banniere-intensite'), sortie = $('banniere-valeur');
     var tete = document.querySelector('.accueil-tete');
     if (!curseur || !sortie || !tete) return;
-    function afficher(v) { curseur.value = v; sortie.textContent = v; }
+    function afficher(v) { curseur.value = v; sortie.textContent = v; DL.majRempli(curseur); }
     function appliquer(v) {
       tete.style.setProperty('--banniere-intensite', String(v / 100));
       afficher(v);
@@ -61,16 +76,6 @@
     curseur.closest('.banniere-reglage').hidden = false;
   })();
 
-  /* ---------- Icônes (Carbon, IBM, Apache 2.0, embarquées dans vendor/icons/carbon-icons.js) ----------
-     DL.icone(nom) renvoie un <svg> décoratif (aria-hidden) : le texte du bouton reste le libellé lu.
-     Les chaînes viennent du fichier vendor généré, pas de l'utilisateur : innerHTML sans risque.
-     Icône inconnue ou fichier absent → chaîne vide, le bouton garde son texte. */
-  DL.icone = function (nom) {
-    var dessin = window.DL_ICONES && window.DL_ICONES[nom];
-    if (!dessin) return '';
-    return '<svg class="icone" viewBox="0 0 32 32" fill="currentColor" aria-hidden="true" focusable="false">' + dessin + '</svg>';
-  };
-
   // Une icône par genre, choisie pour évoquer la technique (pas une décoration).
   var ICONES_FAMILLES = {
     tout: 'apps',
@@ -85,9 +90,20 @@
     volume: 'cube'
   };
 
-  // Colonne « Clavier » : une seule icône, devant le titre (les lignes restent en texte seul).
-  var titreClavier = document.getElementById('t-raccourcis');
-  if (titreClavier) titreClavier.insertAdjacentHTML('afterbegin', DL.icone('keyboard'));
+  /* Panneaux repliables de l'atelier : l'état ouvert / replié de chacun est mémorisé
+     (un panneau replié une fois le reste pour tous les outils). */
+  (function () {
+    var memo = DL.lire('dl:panneaux', {});
+    if (!memo || typeof memo !== 'object') memo = {};
+    document.querySelectorAll('details[data-bloc]').forEach(function (d) {
+      var cle = d.getAttribute('data-bloc');
+      if (typeof memo[cle] === 'boolean') d.open = memo[cle];
+      d.addEventListener('toggle', function () {
+        memo[cle] = d.open;
+        DL.stocker('dl:panneaux', memo);
+      });
+    });
+  })();
 
   /* ---------- Accueil ---------- */
   var familleActive = 'tout';
@@ -338,7 +354,12 @@
     var bord = 2 * (parseFloat(getComputedStyle(cadre).borderLeftWidth) || 0);
     var mobile = window.matchMedia('(max-width: 900px)').matches;
     var dispoW = Math.max(120, scene.clientWidth - pad - bord - 8);
-    var dispoH = Math.max(120, window.innerHeight * (mobile ? 0.78 : 0.86) - pad - bord - 32);
+    // Ordinateur : le plan de travail a une hauteur fixe (grille de l'atelier), l'image s'y cadre.
+    // Écran étroit : la page défile, on vise une part de la hauteur de fenêtre.
+    var padV = parseFloat(st.paddingTop) + parseFloat(st.paddingBottom);
+    var dispoH = mobile
+      ? Math.max(120, window.innerHeight * 0.7 - pad - bord)
+      : Math.max(120, scene.clientHeight - padV - bord - 8);
     var fw = V.etat.format.w, fh = V.etat.format.h;
     var echelle = Math.min(dispoW / fw, dispoH / fh);
     var cssW = Math.floor(fw * echelle), cssH = Math.floor(fh * echelle);
@@ -437,9 +458,16 @@
 
   function majFavoriUI() {
     var fav = V.hist.estFavori(V.etat);
-    var b = $('b-favori');
-    b.setAttribute('aria-pressed', String(fav));
-    b.firstChild.textContent = fav ? '★ Favori ' : '☆ Favori ';
+    // Étoile pleine quand l'image est en favori, sur tous les boutons « Favori » (rail et panneau).
+    document.querySelectorAll('#vue-outil [data-action="favori"]').forEach(function (b) {
+      if (b.getAttribute('aria-pressed') === String(fav) && b._iconeFaite) return;
+      b._iconeFaite = true;
+      b.setAttribute('aria-pressed', String(fav));
+      var place = b.querySelector('.favori-icone') || b;
+      var ancienne = place.querySelector('.icone');
+      if (ancienne) ancienne.remove();
+      place.insertAdjacentHTML('afterbegin', DL.icone(fav ? 'star--filled' : 'star'));
+    });
     var ol = $('favoris');
     ol.textContent = '';
     V.hist.favoris().forEach(function (f) {
@@ -492,12 +520,19 @@
     majFavoriUI();
   }
 
-  $('b-regenerer').addEventListener('click', regenerer);
-  $('b-hasard').addEventListener('click', toutHasard);
-  $('b-export').addEventListener('click', function () { DL.ouvrirExport(); });
-  $('b-palette').addEventListener('click', paletteHasard);
-  $('b-precedent').addEventListener('click', precedent);
-  $('b-favori').addEventListener('click', basculerFavori);
+  // Une même action peut avoir plusieurs boutons (rail, barre d'options, panneau) : data-action les relie.
+  var ACTIONS = {
+    regenerer: regenerer,
+    palette: paletteHasard,
+    hasard: toutHasard,
+    precedent: precedent,
+    favori: basculerFavori,
+    'export': function () { DL.ouvrirExport(); }
+  };
+  document.querySelectorAll('#vue-outil [data-action]').forEach(function (b) {
+    var action = ACTIONS[b.getAttribute('data-action')];
+    if (action) b.addEventListener('click', action);
+  });
   $('b-inverser').addEventListener('click', function () {
     V.etat.couleurs = DL.inverserPalette(V.etat.couleurs);
     construireNuancier();
@@ -707,10 +742,10 @@
     allumerRaccourci(ev.key.toLowerCase());
   });
 
-  // Retour visuel : la ligne du raccourci utilisé s'allume un instant dans la colonne « Clavier »,
-  // ce qui apprend les touches sans avoir à lire la liste.
+  // Retour visuel : le bouton du rail correspondant au raccourci utilisé s'allume un instant,
+  // ce qui apprend les touches sans avoir à lire de liste.
   function allumerRaccourci(touche) {
-    var ligne = document.querySelector('.raccourcis-liste [data-touche="' + touche + '"]');
+    var ligne = document.querySelector('.rail [data-touche="' + touche + '"]');
     if (!ligne) return;
     ligne.classList.add('actif');
     clearTimeout(ligne._minuterie);

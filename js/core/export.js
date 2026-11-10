@@ -120,7 +120,8 @@
     };
 
     dlg.addEventListener('change', majResume);
-    qualite.addEventListener('input', function () { qualiteV.textContent = qualite.value; });
+    qualite.addEventListener('input', function () { qualiteV.textContent = qualite.value; DL.majRempli(qualite); });
+    DL.majRempli(qualite);
 
     $('b-lancer-export').addEventListener('click', async function () {
       if (enCours) return;

@@ -6,7 +6,7 @@
   var DL = (window.DL = window.DL || {});
 
   // Familles techniques affichées en filtre sur l'accueil. L'ordre ici est l'ordre des boutons.
-  DL.familles = {pixel: 'Pixel',hamp: 'Champ',degrade: 'Dégradé',motif: 'Motif',impression: 'Impression',
+  DL.familles = {pixel: 'Pixel',champ: 'Champ',degrade: 'Dégradé',motif: 'Motif',impression: 'Impression',
     typo: 'Typo',
     vecteur: 'Vecteur',
     textile: 'Textile',
