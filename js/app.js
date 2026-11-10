@@ -186,7 +186,8 @@
       ])
     ]);
     lien.insertAdjacentHTML('beforeend', '<span class="annonce-fleche">' + DL.icone('arrow--right') + '</span>');
-    var fermer = DL.el('button', { type: 'button', classe: 'annonce-fermer', 'aria-label': "Masquer l'annonce", texte: '×' });
+    var fermer = DL.el('button', { type: 'button', classe: 'annonce-fermer', 'aria-label': "Masquer l'annonce" });
+    fermer.innerHTML = DL.icone('close');
     fermer.addEventListener('click', function () {
       zone.hidden = true;
       DL.stocker('dl:annonce-masquee', dernier.id);
@@ -260,14 +261,19 @@
 
   // Filtre : famille + texte. Pertinence : nom qui commence par la requête > nom qui la contient
   // > description, famille ou bibliothèque qui la contient.
+  // Minuscules sans accents : « degrade » trouve « Dégradé », « moire » trouve « Moiré ».
+  function normaliser(t) {
+    return String(t).toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
+  }
+
   function filtrer() {
-    var q = $('filtre-texte').value.trim().toLowerCase();
+    var q = normaliser($('filtre-texte').value.trim());
     var grille = $('grille-outils');
     var scores = DL.outils.map(function (o, i) {
       if (familleActive !== 'tout' && o.famille !== familleActive) return null;
       if (!q) return { o: o, s: 0, i: i };
-      var nom = o.nom.toLowerCase();
-      var texte = (o.description + ' ' + (DL.familles[o.famille] || '') + ' ' + o.libs.join(' ') + ' ' + o.numero).toLowerCase();
+      var nom = normaliser(o.nom);
+      var texte = normaliser(o.description + ' ' + (DL.familles[o.famille] || '') + ' ' + o.libs.join(' ') + ' ' + o.numero);
       var s = nom.indexOf(q) === 0 ? 3 : nom.indexOf(q) > 0 ? 2 : texte.indexOf(q) >= 0 ? 1 : 0;
       return s ? { o: o, s: s, i: i } : null;
     }).filter(Boolean).sort(function (a, b) { return b.s - a.s || a.i - b.i; });
@@ -279,6 +285,72 @@
     scores.forEach(function (x) { grille.appendChild(grille.querySelector('[data-id="' + x.o.id + '"]')); });
     $('grille-vide').hidden = scores.length > 0;
   }
+
+  /* ---------- Autocomplétion du filtre ----------
+     Pendant la frappe, on propose en grisé la suite du premier terme connu qui commence par
+     le texte tapé : noms d'outils (dans l'ordre des numéros), puis genres, puis techniques.
+     Tab ou Flèche droite (curseur en fin de champ) accepte ; sans suggestion, Tab garde son
+     rôle normal (passer au champ suivant). */
+  var suggestion = '';
+  function termesConnus() {
+    var vus = {}, liste = [];
+    function ajouter(t) {
+      var cle = normaliser(t);
+      if (!cle || vus[cle]) return;
+      vus[cle] = true;
+      liste.push(t);
+    }
+    DL.outils.forEach(function (o) { ajouter(o.nom); });
+    Object.keys(DL.familles).forEach(function (f) { ajouter(DL.familles[f]); });
+    DL.outils.forEach(function (o) { o.libs.forEach(ajouter); });
+    return liste;
+  }
+  var TERMES = null;
+
+  function majSuggestion() {
+    var champ = $('filtre-texte'), tape = champ.value;
+    var q = normaliser(tape);
+    TERMES = TERMES || termesConnus();
+    suggestion = '';
+    // Seulement si le curseur est en fin de texte et que le texte tient dans le champ :
+    // sinon la suite grisée ne tomberait pas au bon endroit.
+    if (q && champ.selectionStart === tape.length && champ.scrollWidth <= champ.clientWidth) {
+      for (var i = 0; i < TERMES.length; i++) {
+        if (normaliser(TERMES[i]).indexOf(q) === 0 && TERMES[i].length > tape.length) { suggestion = TERMES[i]; break; }
+      }
+    }
+    var fantome = $('filtre-fantome');
+    fantome.firstChild.textContent = suggestion ? tape : '';
+    fantome.lastChild.textContent = suggestion ? suggestion.slice(tape.length) : '';
+    $('filtre-touche').textContent = suggestion ? 'Tab' : 'Ctrl K';
+    $('filtre-suggestion').textContent = suggestion ? 'Suggestion : ' + suggestion + ', Tab pour compléter' : '';
+  }
+
+  function accepterSuggestion() {
+    if (!suggestion) return false;
+    // On reprend le terme tel qu'il est écrit (casse et accents d'origine).
+    $('filtre-texte').value = suggestion;
+    filtrer();
+    majSuggestion();
+    return true;
+  }
+
+  (function () {
+    var champ = $('filtre-texte');
+    if (!champ) return;
+    champ.addEventListener('input', majSuggestion);
+    champ.addEventListener('blur', function () {
+      suggestion = '';
+      $('filtre-fantome').firstChild.textContent = '';
+      $('filtre-fantome').lastChild.textContent = '';
+      $('filtre-touche').textContent = 'Ctrl K';
+    });
+    champ.addEventListener('keydown', function (ev) {
+      if ((ev.key === 'Tab' && !ev.shiftKey) || (ev.key === 'ArrowRight' && champ.selectionStart === champ.value.length)) {
+        if (accepterSuggestion()) ev.preventDefault();
+      }
+    });
+  })();
 
   /* ---------- Vue outil ---------- */
   var V = {
@@ -751,7 +823,7 @@
     var t = ev.target;
 
     if (ev.key === 'Escape') {
-      if (t === $('filtre-texte') && t.value) { t.value = ''; filtrer(); return; }
+      if (t === $('filtre-texte') && t.value) { t.value = ''; filtrer(); majSuggestion(); return; }
       if (V.outil) { location.hash = '#/'; }
       return;
     }

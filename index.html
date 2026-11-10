@@ -113,13 +113,13 @@
           <span class="ctl-entete"><span>Intensité du fond</span><span class="ctl-valeur"><output id="banniere-valeur">28</output>&nbsp;%</span></span>
           <input type="range" id="banniere-intensite" min="0" max="100" step="1" value="28">
         </label>
-        <!-- Annonce du générateur le plus récent (numéro le plus haut du registre), construite par app.js. -->
-        <aside class="annonce" id="annonce" aria-label="Nouveauté" hidden></aside>
         <div class="accueil-titre">
           <h1 id="titre-accueil" class="titre-geant">Lab Design</h1>
           <p class="titre-signature">Par gappy.</p>
         </div>
-        <p class="accueil-intro">Trente générateurs procéduraux. Chaque image vient d'une seed : même seed, mêmes réglages, même image, à l'écran comme en export 8000&nbsp;px.</p>
+        <p class="accueil-intro">Des générateurs pour créer des visuels rapides, chaque image possède une seed partageable à n'importe qui, open-source et totalement gratuit&nbsp;!</p>
+        <!-- Annonce du générateur le plus récent (numéro le plus haut du registre), construite par app.js, en bas de la bannière. -->
+        <aside class="annonce" id="annonce" aria-label="Nouveauté" hidden></aside>
       </div>
 
       <!-- Barre de filtres : ce qu'on montre (recherche, genre), puis comment on le montre (affichage). -->
@@ -127,8 +127,12 @@
         <div class="filtre-recherche" role="search">
           <span class="filtre-icone" data-icone="search" aria-hidden="true"></span>
           <label class="visuellement-cache" for="filtre-texte">Filtrer les outils</label>
-          <input type="search" id="filtre-texte" placeholder="Filtrer : nom, technique…" autocomplete="off" spellcheck="false">
-          <kbd aria-hidden="true">Ctrl K</kbd>
+          <input type="search" id="filtre-texte" placeholder="Filtrer : nom, technique…" autocomplete="off" spellcheck="false" aria-describedby="filtre-suggestion">
+          <!-- Autocomplétion : suite proposée en grisé derrière le texte tapé, acceptée avec Tab
+               ou Flèche droite (app.js). La zone cachée l'annonce aux lecteurs d'écran. -->
+          <span class="filtre-fantome" id="filtre-fantome" aria-hidden="true"><span class="fantome-tape"></span><span class="fantome-suite"></span></span>
+          <span class="visuellement-cache" id="filtre-suggestion" aria-live="polite"></span>
+          <kbd id="filtre-touche" aria-hidden="true">Ctrl K</kbd>
         </div>
         <div class="filtre-groupe filtre-groupe-genre">
           <span class="etiquette filtre-titre" id="titre-genre">Genre</span>

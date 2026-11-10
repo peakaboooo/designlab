@@ -122,7 +122,7 @@ body {
 }
 h1, h2, h3, p { margin: 0; }
 a { color: inherit; }
-button, input, select { font-family: inherit; }
+button, input, select { font-family: inherit; font-feature-settings: inherit; }
 kbd {
   display: inline-flex;
   align-items: center;
@@ -380,16 +380,18 @@ canvas { display: block; }
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)'/%3E%3C/svg%3E");
   background-size: 220px 220px;
 }
-/* Annonce du dernier générateur : pastille cliquable en haut à gauche de la bannière (pendant du
-   curseur d'intensité à droite), sur verre léger pour rester lisible sur le dégradé. */
+/* Annonce du dernier générateur : pastille cliquable sur toute la largeur du bas de la bannière
+   (dernière rangée de sa grille), sur verre léger pour rester lisible sur le dégradé. */
 .annonce {
-  position: absolute;
-  top: var(--e4);
-  left: var(--e4);
+  grid-column: 1 / -1;
+  order: 5; /* après le curseur d'intensité, qui repasse dans le flux sur mobile (order: 3) */
+  justify-self: start;
   display: flex;
   align-items: center;
-  /* Laisse la place du curseur d'intensité, en haut à droite. */
-  max-width: min(560px, calc(100% - clamp(150px, 16vw, 200px) - 3 * var(--e4)));
+  gap: 2px;
+  max-width: min(640px, 100%);
+  min-width: 0;
+  padding-right: 4px;
   border: 1px solid rgba(var(--encre-rgb), 0.16);
   border-radius: 999px;
   background: rgba(var(--encre-rgb), 0.08);
@@ -403,7 +405,7 @@ canvas { display: block; }
   align-items: center;
   gap: var(--e2);
   min-width: 0;
-  padding: 4px 6px 4px 4px;
+  padding: 4px 0 4px 4px;
   border-radius: 999px;
   color: var(--encre);
   font-size: var(--t-sm);
@@ -423,23 +425,22 @@ canvas { display: block; }
 .annonce-texte { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .annonce-texte strong { font-weight: 600; }
 .annonce-texte span { color: var(--attenue); }
-.annonce-fleche { flex: none; color: var(--attenue); transition: transform var(--duree); }
-.annonce-lien:hover .annonce-fleche { transform: translateX(2px); color: var(--encre); }
+/* Flèche et croix : deux cases identiques de 24 px, icônes de 14 px centrées, pour qu'elles
+   tombent sur la même ligne et aient le même poids. */
+.annonce-fleche,
 .annonce-fermer {
   flex: none;
   display: grid;
   place-items: center;
   width: 24px;
   height: 24px;
-  margin-right: 4px;
-  padding: 0;
-  border: 0;
   border-radius: 50%;
-  background: transparent;
   color: var(--attenue);
-  font: 500 15px/1 var(--police-texte);
-  cursor: pointer;
 }
+.annonce-fleche .icone, .annonce-fermer .icone { width: 14px; height: 14px; }
+.annonce-fleche { transition: transform var(--duree); }
+.annonce-lien:hover .annonce-fleche { transform: translateX(2px); color: var(--encre); }
+.annonce-fermer { padding: 0; border: 0; background: transparent; cursor: pointer; }
 .annonce-fermer:hover { background: rgba(var(--encre-rgb), 0.12); color: var(--encre); }
 .titre-geant {
   font: 650 clamp(44px, 8.5vw, 128px)/0.92 var(--police-texte);
@@ -486,6 +487,21 @@ canvas { display: block; }
   padding-right: 56px;
 }
 .filtre-recherche kbd { position: absolute; right: 7px; pointer-events: none; }
+/* Autocomplétion : calque posé sur le champ, mêmes police et retrait que le texte tapé
+   (30 px de retrait + 1 px de bordure). La partie déjà tapée y est invisible : seule la suite
+   apparaît, en grisé, juste après le curseur. */
+.filtre-fantome {
+  position: absolute;
+  inset: 0 56px 0 31px;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  white-space: pre;
+  font: 400 var(--t-sm)/1.2 var(--police-texte);
+  pointer-events: none;
+}
+.fantome-tape { visibility: hidden; }
+.fantome-suite { color: var(--attenue); opacity: 0.75; }
 .filtre-groupe { display: flex; align-items: center; gap: var(--e2); min-width: 0; }
 /* Genres sur leur propre ligne, sous la recherche et l'affichage : la liste peut s'allonger. */
 .filtre-groupe-genre { order: 3; flex: 1 1 100%; }
@@ -1174,7 +1190,6 @@ select option { background: var(--surface-2); color: var(--encre); }
   .accueil-tete { grid-template-columns: minmax(0, 1fr); }
   /* Une colonne : le curseur reprend sa place dans le flux, sous l'intro, sans chevaucher le titre. */
   .banniere-reglage { position: static; order: 3; width: min(100%, 260px); }
-  .annonce { position: static; order: -1; justify-self: start; max-width: 100%; }
   .atelier {
     height: auto;
     grid-template-columns: minmax(0, 1fr);
