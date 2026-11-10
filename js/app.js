@@ -162,38 +162,6 @@
 
     $('filtre-texte').addEventListener('input', filtrer);
     construireAffichages();
-    construireAnnonce();
-  }
-
-  /* Annonce du générateur le plus récent : celui qui porte le plus grand numéro (les numéros
-     suivent l'ordre de publication). C'est un message aux visiteurs : elle s'affiche à chaque visite.
-     La croix la masque pour la page en cours seulement : rien n'est mémorisé. */
-  function construireAnnonce() {
-    var zone = $('annonce');
-    if (!zone || !DL.outils.length) return;
-    var dernier = DL.outils.reduce(function (a, o) {
-      return (parseInt(o.numero, 10) || 0) > (parseInt(a.numero, 10) || 0) ? o : a;
-    });
-
-    var vignette = DL.el('canvas', { width: TAILLE_VIGNETTE, height: TAILLE_VIGNETTE, 'aria-hidden': 'true' });
-    var lien = DL.el('a', { classe: 'annonce-lien', href: '#/' + dernier.id }, [
-      DL.el('span', { classe: 'annonce-vignette' }, [vignette]),
-      DL.el('span', { classe: 'annonce-badge', texte: 'Nouveau' }),
-      DL.el('span', { classe: 'annonce-texte' }, [
-        DL.el('strong', { texte: dernier.numero + ' ' + dernier.nom }),
-        DL.el('span', { texte: ' : ' + dernier.description })
-      ])
-    ]);
-    lien.insertAdjacentHTML('beforeend', '<span class="annonce-fleche">' + DL.icone('arrow--right') + '</span>');
-    var fermer = DL.el('button', { type: 'button', classe: 'annonce-fermer', 'aria-label': "Masquer l'annonce" });
-    fermer.innerHTML = DL.icone('close');
-    fermer.addEventListener('click', function () {
-      zone.hidden = true;
-    });
-    zone.appendChild(lien);
-    zone.appendChild(fermer);
-    zone.hidden = false;
-    observerVignette(vignette, dernier);
   }
 
   /* Modes d'affichage de l'accueil. Le balisage des cartes est le même partout : seul

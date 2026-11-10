@@ -118,8 +118,16 @@
           <p class="titre-signature">Par gappy.</p>
         </div>
         <p class="accueil-intro">Des générateurs pour créer des visuels rapides, chaque image possède une seed partageable à n'importe qui, open-source et totalement gratuit&nbsp;!</p>
-        <!-- Annonce du générateur le plus récent (numéro le plus haut du registre), construite par app.js, en bas de la bannière. -->
-        <aside class="annonce" id="annonce" aria-label="Nouveauté" hidden></aside>
+        <!-- Annonce du dernier générateur publié : HTML écrit à la main, sans JavaScript ni bouton de
+             fermeture, pour qu'elle soit toujours visible. À mettre à jour à chaque nouvel outil
+             (numéro, nom, description, lien) : voir « Ajouter un outil » dans CLAUDE.md. -->
+        <aside class="annonce" aria-label="Nouveauté">
+          <a class="annonce-lien" href="#/ransom">
+            <span class="annonce-badge">Nouveau</span>
+            <span class="annonce-texte"><strong>30 Ransom</strong><span> : lettre de rançon, chaque lettre découpée dans une police, un papier et une couleur différents.</span></span>
+            <span class="annonce-fleche"><svg class="icone" viewBox="0 0 32 32" fill="currentColor" aria-hidden="true" focusable="false"><path d="M18 6 16.57 7.393 24.15 15 4 15 4 17 24.15 17 16.57 24.573 18 26 28 16 18 6z"/></svg></span>
+          </a>
+        </aside>
       </div>
 
       <!-- Barre de filtres : ce qu'on montre (recherche, genre), puis comment on le montre (affichage). -->

@@ -388,10 +388,8 @@ canvas { display: block; }
   justify-self: start;
   display: flex;
   align-items: center;
-  gap: 2px;
   max-width: min(640px, 100%);
   min-width: 0;
-  padding-right: 4px;
   border: 1px solid rgba(var(--encre-rgb), 0.16);
   border-radius: 999px;
   background: rgba(var(--encre-rgb), 0.08);
@@ -405,14 +403,12 @@ canvas { display: block; }
   align-items: center;
   gap: var(--e2);
   min-width: 0;
-  padding: 4px 0 4px 4px;
+  padding: 4px 4px 4px 4px;
   border-radius: 999px;
   color: var(--encre);
   font-size: var(--t-sm);
   text-decoration: none;
 }
-.annonce-vignette { flex: none; width: 26px; height: 26px; border-radius: 50%; overflow: hidden; background: rgba(var(--encre-rgb), 0.12); }
-.annonce-vignette canvas { width: 100%; height: 100%; }
 .annonce-badge {
   flex: none;
   padding: 3px 7px;
@@ -425,10 +421,8 @@ canvas { display: block; }
 .annonce-texte { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .annonce-texte strong { font-weight: 600; }
 .annonce-texte span { color: var(--attenue); }
-/* Flèche et croix : deux cases identiques de 24 px, icônes de 14 px centrées, pour qu'elles
-   tombent sur la même ligne et aient le même poids. */
-.annonce-fleche,
-.annonce-fermer {
+/* Flèche dans une case de 24 px, icône de 14 px centrée. */
+.annonce-fleche {
   flex: none;
   display: grid;
   place-items: center;
@@ -437,11 +431,9 @@ canvas { display: block; }
   border-radius: 50%;
   color: var(--attenue);
 }
-.annonce-fleche .icone, .annonce-fermer .icone { width: 14px; height: 14px; }
+.annonce-fleche .icone { width: 14px; height: 14px; }
 .annonce-fleche { transition: transform var(--duree); }
 .annonce-lien:hover .annonce-fleche { transform: translateX(2px); color: var(--encre); }
-.annonce-fermer { padding: 0; border: 0; background: transparent; cursor: pointer; }
-.annonce-fermer:hover { background: rgba(var(--encre-rgb), 0.12); color: var(--encre); }
 .titre-geant {
   font: 650 clamp(44px, 8.5vw, 128px)/0.92 var(--police-texte);
   letter-spacing: -0.045em;
