@@ -113,6 +113,8 @@
           <span class="ctl-entete"><span>Intensité du fond</span><span class="ctl-valeur"><output id="banniere-valeur">28</output>&nbsp;%</span></span>
           <input type="range" id="banniere-intensite" min="0" max="100" step="1" value="28">
         </label>
+        <!-- Annonce du générateur le plus récent (numéro le plus haut du registre), construite par app.js. -->
+        <aside class="annonce" id="annonce" aria-label="Nouveauté" hidden></aside>
         <div class="accueil-titre">
           <h1 id="titre-accueil" class="titre-geant">Lab Design</h1>
           <p class="titre-signature">Par gappy.</p>
@@ -170,18 +172,18 @@
           <button class="bouton bouton-accent" id="b-export" type="button" data-action="export" data-icone="download">Exporter <kbd>E</kbd></button>
         </div>
 
-        <!-- Rail d'actions : icône + infobulle (libellé et touche). Le nom accessible vient
-             d'aria-label, la touche d'aria-keyshortcuts. data-touche relie le bouton à son
+        <!-- Rail d'actions : icône + touche toujours visible, infobulle (libellé et touche) au survol.
+             Le nom accessible vient d'aria-label, la touche d'aria-keyshortcuts. data-touche relie le bouton à son
              raccourci : il s'allume brièvement quand la touche est utilisée. -->
         <nav class="rail" aria-label="Actions rapides">
-          <button class="rail-bouton" type="button" data-action="regenerer" data-touche=" " data-icone="renew" aria-label="Régénérer" aria-keyshortcuts="Space"><span class="infobulle" aria-hidden="true">Régénérer <kbd>Espace</kbd></span></button>
-          <button class="rail-bouton" type="button" data-action="palette" data-touche="p" data-icone="color-palette" aria-label="Palette au hasard" aria-keyshortcuts="P"><span class="infobulle" aria-hidden="true">Palette au hasard <kbd>P</kbd></span></button>
-          <button class="rail-bouton" type="button" data-action="hasard" data-touche="r" data-icone="shuffle" aria-label="Tout au hasard" aria-keyshortcuts="R"><span class="infobulle" aria-hidden="true">Tout au hasard <kbd>R</kbd></span></button>
+          <button class="rail-bouton" type="button" data-action="regenerer" data-touche=" " data-icone="renew" aria-label="Régénérer" aria-keyshortcuts="Space"><kbd class="rail-touche" aria-hidden="true">Espace</kbd><span class="infobulle" aria-hidden="true">Régénérer <kbd>Espace</kbd></span></button>
+          <button class="rail-bouton" type="button" data-action="palette" data-touche="p" data-icone="color-palette" aria-label="Palette au hasard" aria-keyshortcuts="P"><kbd class="rail-touche" aria-hidden="true">P</kbd><span class="infobulle" aria-hidden="true">Palette au hasard <kbd>P</kbd></span></button>
+          <button class="rail-bouton" type="button" data-action="hasard" data-touche="r" data-icone="shuffle" aria-label="Tout au hasard" aria-keyshortcuts="R"><kbd class="rail-touche" aria-hidden="true">R</kbd><span class="infobulle" aria-hidden="true">Tout au hasard <kbd>R</kbd></span></button>
           <span class="rail-sep" aria-hidden="true"></span>
-          <button class="rail-bouton" type="button" data-action="precedent" data-touche="z" data-icone="undo" aria-label="Précédent" aria-keyshortcuts="Z"><span class="infobulle" aria-hidden="true">Précédent <kbd>Z</kbd></span></button>
-          <button class="rail-bouton" type="button" data-action="favori" data-touche="f" data-icone="star" aria-label="Favori" aria-pressed="false" aria-keyshortcuts="F"><span class="infobulle" aria-hidden="true">Favori <kbd>F</kbd></span></button>
+          <button class="rail-bouton" type="button" data-action="precedent" data-touche="z" data-icone="undo" aria-label="Précédent" aria-keyshortcuts="Z"><kbd class="rail-touche" aria-hidden="true">Z</kbd><span class="infobulle" aria-hidden="true">Précédent <kbd>Z</kbd></span></button>
+          <button class="rail-bouton" type="button" data-action="favori" data-touche="f" data-icone="star" aria-label="Favori" aria-pressed="false" aria-keyshortcuts="F"><kbd class="rail-touche" aria-hidden="true">F</kbd><span class="infobulle" aria-hidden="true">Favori <kbd>F</kbd></span></button>
           <span class="rail-sep" aria-hidden="true"></span>
-          <button class="rail-bouton" type="button" data-action="export" data-touche="e" data-icone="download" aria-label="Exporter" aria-keyshortcuts="E"><span class="infobulle" aria-hidden="true">Exporter <kbd>E</kbd></span></button>
+          <button class="rail-bouton" type="button" data-action="export" data-touche="e" data-icone="download" aria-label="Exporter" aria-keyshortcuts="E"><kbd class="rail-touche" aria-hidden="true">E</kbd><span class="infobulle" aria-hidden="true">Exporter <kbd>E</kbd></span></button>
         </nav>
 
         <div class="scene" id="scene">
