@@ -14,39 +14,25 @@
   };
 
   // Idées non développées : affichées en texte seul dans « Prochainement ».
-  // Quand une idée devient un outil, la retirer d'ici.
+  // Quand une idée devient un outil, la retirer d'ici. Retirées sans être faites (session 6),
+  // parce qu'elles doublaient un outil existant : Sear (Benday), Mosh, Stitch et Hiss (Static),
+  // Motley (Ransom), Chaff (Husk).
   DL.prochainement = [
-    ['Quilt', 'Couvertures en pixels'],
-    ['Zig', 'Zigzags arrondis'],
-    ['Vee', 'Chevrons miroir'],
     ['Fete', 'Patchs de festival'],
     ['Parcel', 'Affiches de colis en pixels'],
-    ['Stipple', 'Portraits en demi-teinte'],
-    ['Prism', "Fonds d'aurore en pixels"],
     ['Delta', 'Mosaïques satellite corrompues'],
     ['Mist', 'Lavis néon pulvérisés'],
-    ['Totem', 'Bannières de pixels en miroir'],
-    ['Atlas', 'Cartes de terrain en texte'],
     ['Sampler', 'Nuanciers de tuiles'],
-    ['Kiosk', 'Affiches typographiques collées'],
-    ['Mosh', 'Signal corrompu'],
-    ['Pane', 'Panneaux dégradés'],
     ['Bloom', 'Champs de pixels symétriques'],
-    ['Sear', 'Champs thermiques étalés'],
     ['Carve', 'Collages de panneaux sculptés'],
     ['Culture', 'Colonies granuleuses'],
     ['Husk', 'Dispersions de balles'],
-    ['Strand', 'Chaînes de tiges ramifiées'],
-    ['Chaff', 'Lames lancées'],
     ['Splice', 'Cut-up riso'],
     ['Whorl', 'Rayures déformées'],
     ['Sprig', 'Répétitions botaniques'],
     ['Frond', 'Natures mortes dégradées'],
     ['Pith', 'Tissus cellulaires tramés'],
-    ['Hiss', 'Neige de télévision'],
-    ['Stitch', 'Grilles glitchées'],
     ['Coral', "Textile d'éventails marins"],
-    ['Motley', 'Patchwork de glyphes'],
     ['Crowd', 'Foules floutées']
   ];
 

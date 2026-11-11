@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>DesignLab · générateurs visuels, par gappy</title>
-  <meta name="description" content="Trente générateurs de visuels procéduraux gratuits : pixels, courbes de niveau, flow fields, dégradés, op-art, zellige et kaléidoscopes, moiré, tissage, riso, trames, spécimens typographiques, marbrures, métaballes, autocollants, lettres de rançon. Seedés, éditables, export PNG, JPEG et SVG jusqu'à 8000 px.">
+  <meta name="description" content="Quarante générateurs de visuels procéduraux gratuits : pixels, courbes de niveau, flow fields, dégradés, op-art, zellige et kaléidoscopes, moiré, tissage, riso, trames, spécimens typographiques, marbrures, métaballes, autocollants, lettres de rançon, patchwork, cartes en caractères, affiches collées, portraits en pointillé depuis une photo. Seedés, éditables, export PNG, JPEG et SVG jusqu'à 8000 px.">
   <meta name="keywords" content="générateur visuel, art génératif, design génératif, motif, texture, dégradé, zellige, kaléidoscope, moiré, risographie, pixel art, export SVG, fond d'écran, outil design gratuit">
   <meta name="author" content="Gappy">
   <meta name="robots" content="index, follow">
@@ -100,6 +100,16 @@
           <li><a href="#/smear">28 Smear</a> : mot étiré le long d'une trajectoire</li>
           <li><a href="#/blot">29 Blot</a> : taches d'encre en miroir</li>
           <li><a href="#/ransom">30 Ransom</a> : lettre de rançon</li>
+          <li><a href="#/quilt">31 Quilt</a> : couvertures en patchwork pixel</li>
+          <li><a href="#/zig">32 Zig</a> : zigzags arrondis en bandes, export SVG</li>
+          <li><a href="#/vee">33 Vee</a> : chevrons emboîtés en miroir, export SVG</li>
+          <li><a href="#/prism">34 Prism</a> : aurores boréales en gros pixels tramés</li>
+          <li><a href="#/totem">35 Totem</a> : mâts de créatures en pixels symétriques</li>
+          <li><a href="#/atlas">36 Atlas</a> : cartes imaginaires en caractères</li>
+          <li><a href="#/kiosk">37 Kiosk</a> : mur d'affiches collées et déchirées</li>
+          <li><a href="#/strand">38 Strand</a> : tiges ramifiées et perlées, export SVG</li>
+          <li><a href="#/pane">39 Pane</a> : panneaux de verre en dégradé, export SVG</li>
+          <li><a href="#/stipple">40 Stipple</a> : portraits en pointillé, depuis ta photo ou un sujet généré</li>
         </ol>
       </section>
     </noscript>
@@ -122,9 +132,9 @@
              fermeture, pour qu'elle soit toujours visible. À mettre à jour à chaque nouvel outil
              (numéro, nom, description, lien) : voir « Ajouter un outil » dans CLAUDE.md. -->
         <aside class="nouveaute" aria-label="Nouveauté">
-          <a class="nouveaute-lien" href="#/ransom">
+          <a class="nouveaute-lien" href="#/stipple">
             <span class="nouveaute-badge">Nouveau</span>
-            <span class="nouveaute-texte"><strong>30 Ransom</strong><span> : lettre de rançon, chaque lettre découpée dans une police, un papier et une couleur différents.</span></span>
+            <span class="nouveaute-texte"><strong>40 Stipple</strong><span> : ta photo en portrait pointillé, et neuf autres nouveaux outils.</span></span>
             <span class="nouveaute-fleche"><svg class="icone" viewBox="0 0 32 32" fill="currentColor" aria-hidden="true" focusable="false"><path d="M18 6 16.57 7.393 24.15 15 4 15 4 17 24.15 17 16.57 24.573 18 26 28 16 18 6z"/></svg></span>
           </a>
         </aside>
@@ -320,6 +330,7 @@
   <script defer src="js/core/rng.js"></script>
   <script defer src="js/core/noise.js"></script>
   <script defer src="js/core/palettes.js"></script>
+  <script defer src="js/core/images.js"></script>
   <script defer src="js/core/engines.js"></script>
   <script defer src="js/core/controls.js"></script>
   <script defer src="js/core/state.js"></script>
@@ -356,6 +367,16 @@
   <script defer src="js/tools/smear.js"></script>
   <script defer src="js/tools/blot.js"></script>
   <script defer src="js/tools/ransom.js"></script>
+  <script defer src="js/tools/quilt.js"></script>
+  <script defer src="js/tools/zig.js"></script>
+  <script defer src="js/tools/vee.js"></script>
+  <script defer src="js/tools/prism.js"></script>
+  <script defer src="js/tools/totem.js"></script>
+  <script defer src="js/tools/atlas.js"></script>
+  <script defer src="js/tools/kiosk.js"></script>
+  <script defer src="js/tools/strand.js"></script>
+  <script defer src="js/tools/pane.js"></script>
+  <script defer src="js/tools/stipple.js"></script>
   <!-- Application (après les outils : elle lit le registre complet) -->
   <script defer src="js/app.js"></script>
 </body>

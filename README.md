@@ -10,13 +10,13 @@ Chaque images est possède une seed, tu peux la partager à n'importe qui il obt
  
 | Famille | Outils |
 |---|---|
-| Pixel et glitch | 01 Oddgrid · 10 Fold · 20 Static |
-| Paysages et matières | 02 Terrain · 09 Vein (SVG) · 12 Strate · 15 Shibori |
-| Lignes et op-art | 03 Filament · 05 Warp · 13 Moiré (SVG) · 16 Weave · 18 Rise (SVG) · 22 Optic |
-| Papier et affiches | 06 Riso · 08 Specimen · 14 Origami · 21 Modular (SVG) |
+| Pixel et glitch | 01 Oddgrid · 10 Fold · 20 Static · 31 Quilt · 34 Prism · 35 Totem |
+| Paysages et matières | 02 Terrain · 09 Vein (SVG) · 12 Strate · 15 Shibori · 38 Strand (SVG) |
+| Lignes et op-art | 03 Filament · 05 Warp · 13 Moiré (SVG) · 16 Weave · 18 Rise (SVG) · 22 Optic · 32 Zig (SVG) · 33 Vee (SVG) |
+| Papier et affiches | 06 Riso · 08 Specimen · 14 Origami · 21 Modular (SVG) · 37 Kiosk |
 | Motifs et géométrie | 11 Arabesque · 17 Relief · 19 Dahlia · 24 Tokens (SVG) |
-| Couleur et trames | 04 Aura · 07 Benday · 25 Sonar · 29 Blot |
-| Typo | 23 Cipher (SVG) · 28 Smear · 30 Ransom |
+| Couleur et trames | 04 Aura · 07 Benday · 25 Sonar · 29 Blot · 39 Pane (SVG) · 40 Stipple |
+| Typo | 23 Cipher (SVG) · 28 Smear · 30 Ransom · 36 Atlas |
 | Éléments à composer | 26 Gloop (SVG) · 27 Planche (SVG) |
  
 ## Comment ça marche
@@ -24,6 +24,7 @@ Chaque images est possède une seed, tu peux la partager à n'importe qui il obt
 - Du HTML, du CSS et du JavaScript simple.
 - Les réglages, la seed et la palette sont dans l'adresse : copie le lien et tu partages l'image exacte.
 - Export en PNG, JPEG ou SVG (pour les outils vectoriels). L'image est recalculée à la taille demandée, jamais agrandie.
+- Stipple transforme ta propre photo en pointillé : choisis-la, glisse-la ou colle-la. Elle reste sur ton appareil (rien n'est envoyé) et n'est pas dans le lien partagé.
 - Raccourcis : `Espace` régénérer · `P` palette · `R` tout au hasard · `E` export · `Z` précédent · `F` favori.
 ## Crédits et licences
  

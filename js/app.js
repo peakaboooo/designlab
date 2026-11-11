@@ -736,6 +736,45 @@
 
   DL.initExport(function () { return V.outil ? { outil: V.outil, etat: V.etat } : null; });
 
+  /* ---------- Image glissée ou collée ----------
+     Pour un outil qui a un réglage d'image (Stipple) : un fichier lâché n'importe où dans
+     l'atelier, ou collé avec Ctrl+V, devient le sujet. Sans ce réglage, on n'intercepte rien.
+     Le dépôt couvre tout l'atelier : un fichier lâché à côté du plan de travail ferait sinon
+     quitter la page pour afficher l'image. */
+  (function () {
+    var vue = $('vue-outil'), scene = $('scene');
+    function premiereImage(fichiers) {
+      return Array.prototype.find.call(fichiers || [], function (f) { return /^image\//.test(f.type); }) || null;
+    }
+    function accepte(ev) {
+      return !!(V.outil && V.controles && V.controles.importerImage && ev.dataTransfer &&
+        Array.prototype.indexOf.call(ev.dataTransfer.types || [], 'Files') >= 0);
+    }
+    vue.addEventListener('dragover', function (ev) {
+      if (!accepte(ev)) return;
+      ev.preventDefault();
+      ev.dataTransfer.dropEffect = 'copy';
+      scene.classList.add('depot');
+    });
+    vue.addEventListener('dragleave', function (ev) {
+      if (!ev.relatedTarget || !vue.contains(ev.relatedTarget)) scene.classList.remove('depot');
+    });
+    vue.addEventListener('drop', function (ev) {
+      scene.classList.remove('depot');
+      if (!accepte(ev)) return;
+      ev.preventDefault();
+      var f = premiereImage(ev.dataTransfer.files);
+      if (f) V.controles.importerImage(f);
+    });
+    document.addEventListener('paste', function (ev) {
+      if (!V.outil || vue.hidden || !V.controles || !V.controles.importerImage || estChampTexte(ev.target)) return;
+      var f = premiereImage(ev.clipboardData && ev.clipboardData.files);
+      if (!f) return;
+      ev.preventDefault();
+      V.controles.importerImage(f);
+    });
+  })();
+
   /* ---------- Routeur ---------- */
   function router() {
     var h = location.hash.replace(/^#\/?/, '');

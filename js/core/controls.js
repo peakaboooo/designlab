@@ -60,6 +60,7 @@
   DL.construireControles = function (conteneur, outil, etat, surChangement) {
     conteneur.textContent = '';
     var champs = {};
+    var importerImage = null, afficherImage = null;
 
     outil.params.forEach(function (def) {
       var id = 'dl-p-' + def.cle;
@@ -126,6 +127,16 @@
         input = el('input', { type: 'text', id: id, maxlength: def.max || 40, spellcheck: 'false', autocomplete: 'off' });
         input.addEventListener('input', function () { surChangement(def.cle, input.value, false); });
         input.addEventListener('change', function () { surChangement(def.cle, input.value, true); });
+      } else if (def.type === 'image') {
+        var img = controleImage(def, id, surChangement);
+        input = img.corps;
+        valeur = img.nom;
+        mode = 'image';
+        nom = el('span', { id: id + '-l', texte: def.label });
+        entete.replaceChild(nom, entete.firstChild);
+        entete.appendChild(valeur);
+        importerImage = img.charger;
+        afficherImage = img.afficher;
       }
 
       ligne.appendChild(entete);
@@ -138,6 +149,7 @@
     function maj(e) {
       Object.keys(champs).forEach(function (k) {
         var c = champs[k], v = e.params[k];
+        if (c.mode === 'image') { afficherImage(v); return; }
         if (c.mode === 'toggle') c.input.checked = !!v;
         else if (c.mode === 'segments') {
           c.input.querySelectorAll('input').forEach(function (r) { r.checked = r.value === String(v); });
@@ -149,8 +161,80 @@
       });
     }
     maj(etat);
-    return { maj: maj };
+    // importerImage : présent si l'outil a un param image (glisser-déposer et coller, app.js).
+    return { maj: maj, importerImage: importerImage };
   };
+
+  /* Contrôle d'image importée : vignette, bouton Importer / Remplacer, bouton Retirer, et une
+     note qui dit ce que devient l'image (elle reste sur l'appareil, elle n'est pas dans le lien).
+     Le vrai <input type="file"> est caché : un bouton se lit et se navigue mieux au clavier. */
+  function controleImage(def, id, surChangement) {
+    var fichier = el('input', { type: 'file', accept: 'image/*', id: id, classe: 'visuellement-cache', tabindex: '-1', 'aria-hidden': 'true' });
+    var vignette = el('canvas', { classe: 'image-vignette', width: 64, height: 64, 'aria-hidden': 'true' });
+    var importer = el('button', { type: 'button', classe: 'bouton bouton-petit', 'aria-describedby': id + '-note' });
+    var retirer = el('button', { type: 'button', classe: 'bouton bouton-petit bouton-fantome', texte: 'Retirer' });
+    var nom = el('span', { classe: 'ctl-valeur ctl-image-nom' });
+    var note = el('p', { classe: 'ctl-note', id: id + '-note', 'aria-live': 'polite' });
+    var corps = el('div', { classe: 'image-champ' }, [
+      el('div', { classe: 'image-ligne' }, [vignette, importer, retirer]),
+      note,
+      fichier
+    ]);
+
+    function libelleImporter(texte) {
+      importer.innerHTML = DL.icone ? DL.icone('upload') : '';
+      importer.appendChild(document.createTextNode(texte));
+    }
+
+    function afficher(v) {
+      var src = DL.imageImportee(v);
+      vignette.hidden = !src;
+      retirer.hidden = !v;
+      if (src) {
+        // Vignette recadrée au centre, comme l'outil la lit (cover).
+        var c = vignette.getContext('2d'), k = Math.max(64 / src.w, 64 / src.h);
+        c.clearRect(0, 0, 64, 64);
+        c.drawImage(src.canvas, (64 - src.w * k) / 2, (64 - src.h * k) / 2, src.w * k, src.h * k);
+        nom.textContent = src.nom;
+        nom.title = src.nom;
+        libelleImporter('Remplacer');
+        note.textContent = "L'image reste sur ton appareil. Elle n'est pas dans le lien : qui l'ouvre voit le sujet généré.";
+      } else if (v) {
+        nom.textContent = 'Absente';
+        nom.title = '';
+        libelleImporter('Importer une image');
+        note.textContent = "L'image de ce réglage n'est plus en mémoire (elle n'est jamais dans le lien). Importe-la de nouveau ; en attendant, le sujet est généré.";
+      } else {
+        nom.textContent = 'Aucune';
+        nom.title = '';
+        libelleImporter('Importer une image');
+        note.textContent = 'Choisis, glisse sur le plan de travail ou colle une image : elle devient le sujet. Sans image, le sujet est généré.';
+      }
+    }
+
+    function charger(f) {
+      note.textContent = "Lecture de l'image…";
+      return DL.importerImage(f).then(function (idImg) {
+        afficher(idImg);
+        surChangement(def.cle, idImg, true);
+      }, function (err) {
+        note.textContent = err.message;
+      });
+    }
+
+    importer.addEventListener('click', function () { fichier.click(); });
+    fichier.addEventListener('change', function () {
+      if (fichier.files && fichier.files[0]) charger(fichier.files[0]);
+      fichier.value = ''; // rechoisir le même fichier doit relancer l'import
+    });
+    retirer.addEventListener('click', function () {
+      afficher('');
+      surChangement(def.cle, '', true);
+      importer.focus();
+    });
+
+    return { corps: corps, nom: nom, charger: charger, afficher: afficher };
+  }
 
   // Tire des réglages au hasard dans le domaine de chaque param (« Tout au hasard »).
   // Les champs texte gardent leur valeur : un mot saisi n'est pas un réglage à brasser.

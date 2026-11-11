@@ -49,6 +49,8 @@
       return vals.indexOf(String(v)) >= 0 ? String(v) : def.defaut;
     }
     if (def.type === 'texte') return String(v).slice(0, def.max || 40);
+    // Image importée : seulement son identifiant (images.js), jamais l'image elle-même.
+    if (def.type === 'image') return DL.ID_IMAGE.test(String(v)) ? String(v) : def.defaut;
     return def.defaut;
   }
   DL.validerParam = valider;
