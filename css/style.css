@@ -382,7 +382,7 @@ canvas { display: block; }
 }
 /* Annonce du dernier générateur : pastille cliquable sur toute la largeur du bas de la bannière
    (dernière rangée de sa grille), sur verre léger pour rester lisible sur le dégradé. */
-.annonce {
+.nouveaute {
   grid-column: 1 / -1;
   order: 5; /* après le curseur d'intensité, qui repasse dans le flux sur mobile (order: 3) */
   justify-self: start;
@@ -397,8 +397,8 @@ canvas { display: block; }
   backdrop-filter: blur(12px);
   transition: background var(--duree), border-color var(--duree);
 }
-.annonce:hover { background: rgba(var(--encre-rgb), 0.14); border-color: rgba(var(--encre-rgb), 0.26); }
-.annonce-lien {
+.nouveaute:hover { background: rgba(var(--encre-rgb), 0.14); border-color: rgba(var(--encre-rgb), 0.26); }
+.nouveaute-lien {
   display: flex;
   align-items: center;
   gap: var(--e2);
@@ -409,7 +409,7 @@ canvas { display: block; }
   font-size: var(--t-sm);
   text-decoration: none;
 }
-.annonce-badge {
+.nouveaute-badge {
   flex: none;
   padding: 3px 7px;
   border-radius: 999px;
@@ -418,11 +418,11 @@ canvas { display: block; }
   font-size: var(--t-2xs);
   font-weight: 600;
 }
-.annonce-texte { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.annonce-texte strong { font-weight: 600; }
-.annonce-texte span { color: var(--attenue); }
+.nouveaute-texte { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.nouveaute-texte strong { font-weight: 600; }
+.nouveaute-texte span { color: var(--attenue); }
 /* Flèche dans une case de 24 px, icône de 14 px centrée. */
-.annonce-fleche {
+.nouveaute-fleche {
   flex: none;
   display: grid;
   place-items: center;
@@ -431,9 +431,9 @@ canvas { display: block; }
   border-radius: 50%;
   color: var(--attenue);
 }
-.annonce-fleche .icone { width: 14px; height: 14px; }
-.annonce-fleche { transition: transform var(--duree); }
-.annonce-lien:hover .annonce-fleche { transform: translateX(2px); color: var(--encre); }
+.nouveaute-fleche .icone { width: 14px; height: 14px; }
+.nouveaute-fleche { transition: transform var(--duree); }
+.nouveaute-lien:hover .nouveaute-fleche { transform: translateX(2px); color: var(--encre); }
 .titre-geant {
   font: 650 clamp(44px, 8.5vw, 128px)/0.92 var(--police-texte);
   letter-spacing: -0.045em;
