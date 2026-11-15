@@ -77,9 +77,15 @@
 
   DL.memeEtat = function (a, b) { return DL.etatVersQuery(a) === DL.etatVersQuery(b); };
 
-  // État → partie « query » du hash.
-  DL.etatVersQuery = function (e) {
-    var p = Object.keys(e.params).map(function (k) {
+  /* État → partie « query » du hash. Avec l'outil (adresse de la page, lien copié), les textes
+     restés à leur valeur par défaut sont omis : un champ absent vaut le défaut à la lecture,
+     et l'adresse de News (douze textes) reste courte tant qu'on n'a rien réécrit. */
+  DL.etatVersQuery = function (e, outil) {
+    var defauts = {};
+    if (outil) outil.params.forEach(function (d) { if (d.type === 'texte') defauts[d.cle] = d.defaut; });
+    var p = Object.keys(e.params).filter(function (k) {
+      return !(k in defauts) || e.params[k] !== defauts[k];
+    }).map(function (k) {
       var v = e.params[k];
       if (typeof v === 'boolean') v = v ? 1 : 0;
       return k + ':' + encodeURIComponent(String(v)).replace(/,/g, '%2C');

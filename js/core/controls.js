@@ -61,6 +61,9 @@
     conteneur.textContent = '';
     var champs = {};
     var importerImage = null, afficherImage = null;
+    // Groupes (« groupe » dans la définition) : params rangés sous un intertitre commun.
+    // conditions : ce qui s'affiche ou non selon les réglages (« visible » dans la définition).
+    var groupes = {}, conditions = [];
 
     outil.params.forEach(function (def) {
       var id = 'dl-p-' + def.cle;
@@ -124,7 +127,11 @@
         input = el('input', { type: 'checkbox', id: id, classe: 'interrupteur' });
         input.addEventListener('change', function () { surChangement(def.cle, input.checked, true); });
       } else if (def.type === 'texte') {
-        input = el('input', { type: 'text', id: id, maxlength: def.max || 40, spellcheck: 'false', autocomplete: 'off' });
+        // « lignes » dans la définition : champ sur plusieurs lignes (paragraphe de News).
+        // Les retours à la ligne font partie de la valeur, donc de l'URL.
+        input = def.lignes
+          ? el('textarea', { id: id, rows: def.lignes, maxlength: def.max || 40, spellcheck: 'false', autocomplete: 'off' })
+          : el('input', { type: 'text', id: id, maxlength: def.max || 40, spellcheck: 'false', autocomplete: 'off' });
         input.addEventListener('input', function () { surChangement(def.cle, input.value, false); });
         input.addEventListener('change', function () { surChangement(def.cle, input.value, true); });
       } else if (def.type === 'image') {
@@ -141,12 +148,26 @@
 
       ligne.appendChild(entete);
       ligne.appendChild(input);
-      conteneur.appendChild(ligne);
+      var cible = conteneur;
+      if (def.groupe) {
+        if (!groupes[def.groupe]) {
+          groupes[def.groupe] = el('div', { classe: 'ctl-groupe' }, [el('p', { classe: 'sous-titre', texte: def.groupe })]);
+          conteneur.appendChild(groupes[def.groupe]);
+          if (def.visible) conditions.push({ noeud: groupes[def.groupe], visible: def.visible });
+        }
+        cible = groupes[def.groupe];
+      } else if (def.visible) conditions.push({ noeud: ligne, visible: def.visible });
+      cible.appendChild(ligne);
       champs[def.cle] = { def: def, input: input, valeur: valeur, mode: mode };
     });
 
+    function majVisibilite(params) {
+      conditions.forEach(function (c) { c.noeud.hidden = !c.visible(params); });
+    }
+
     // Met les contrôles à jour depuis un état (retour arrière, tout au hasard, URL).
     function maj(e) {
+      majVisibilite(e.params);
       Object.keys(champs).forEach(function (k) {
         var c = champs[k], v = e.params[k];
         if (c.mode === 'image') { afficherImage(v); return; }
@@ -162,7 +183,7 @@
     }
     maj(etat);
     // importerImage : présent si l'outil a un param image (glisser-déposer et coller, app.js).
-    return { maj: maj, importerImage: importerImage };
+    return { maj: maj, majVisibilite: majVisibilite, importerImage: importerImage };
   };
 
   /* Contrôle d'image importée : vignette, bouton Importer / Remplacer, bouton Retirer, et une
@@ -241,7 +262,8 @@
   DL.paramsAuHasard = function (outil, actuels) {
     var r = DL.rngLibre(), p = {};
     outil.params.forEach(function (d) {
-      if (d.type === 'range') {
+      if (d.hasard === false) p[d.cle] = actuels[d.cle];
+      else if (d.type === 'range') {
         var pas = d.pas || 1, n = Math.round((d.max - d.min) / pas);
         p[d.cle] = parseFloat((d.min + r.int(0, n) * pas).toFixed(6));
       } else if (d.type === 'select') {

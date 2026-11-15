@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>DesignLab · générateurs visuels, par gappy</title>
-  <meta name="description" content="Quarante générateurs de visuels procéduraux gratuits : pixels, courbes de niveau, flow fields, dégradés, op-art, zellige et kaléidoscopes, moiré, tissage, riso, trames, spécimens typographiques, marbrures, métaballes, autocollants, lettres de rançon, patchwork, cartes en caractères, affiches collées, portraits en pointillé depuis une photo. Seedés, éditables, export PNG, JPEG et SVG jusqu'à 8000 px.">
+  <meta name="description" content="Quarante et un générateurs de visuels procéduraux gratuits : pixels, courbes de niveau, flow fields, dégradés, op-art, zellige et kaléidoscopes, moiré, tissage, riso, trames, spécimens typographiques, marbrures, métaballes, autocollants, lettres de rançon, patchwork, cartes en caractères, affiches collées, portraits en pointillé depuis une photo, collages de journaux. Seedés, éditables, export PNG, JPEG et SVG jusqu'à 8000 px.">
   <meta name="keywords" content="générateur visuel, art génératif, design génératif, motif, texture, dégradé, zellige, kaléidoscope, moiré, risographie, pixel art, export SVG, fond d'écran, outil design gratuit">
   <meta name="author" content="Gappy">
   <meta name="robots" content="index, follow">
@@ -110,6 +110,7 @@
           <li><a href="#/strand">38 Strand</a> : tiges ramifiées et perlées, export SVG</li>
           <li><a href="#/pane">39 Pane</a> : panneaux de verre en dégradé, export SVG</li>
           <li><a href="#/stipple">40 Stipple</a> : portraits en pointillé, depuis ta photo ou un sujet généré</li>
+          <li><a href="#/news">41 News</a> : collage de coupures de journaux, avec tes titres et ton texte</li>
         </ol>
       </section>
     </noscript>
@@ -132,9 +133,9 @@
              fermeture, pour qu'elle soit toujours visible. À mettre à jour à chaque nouvel outil
              (numéro, nom, description, lien) : voir « Ajouter un outil » dans CLAUDE.md. -->
         <aside class="nouveaute" aria-label="Nouveauté">
-          <a class="nouveaute-lien" href="#/stipple">
+          <a class="nouveaute-lien" href="#/news">
             <span class="nouveaute-badge">Nouveau</span>
-            <span class="nouveaute-texte"><strong>40 Stipple</strong><span> : ta photo en portrait pointillé, et neuf autres nouveaux outils.</span></span>
+            <span class="nouveaute-texte"><strong>41 News</strong><span> : un collage de coupures de journaux, avec tes titres et ton texte.</span></span>
             <span class="nouveaute-fleche"><svg class="icone" viewBox="0 0 32 32" fill="currentColor" aria-hidden="true" focusable="false"><path d="M18 6 16.57 7.393 24.15 15 4 15 4 17 24.15 17 16.57 24.573 18 26 28 16 18 6z"/></svg></span>
           </a>
         </aside>
@@ -211,6 +212,8 @@
         <div class="scene" id="scene">
           <div class="scene-cadre" id="scene-cadre">
             <canvas id="apercu" role="img" aria-label="Aperçu"></canvas>
+            <!-- Contour de la zone survolée, pour les outils dont on retouche le texte sur l'image (News). -->
+            <svg class="apercu-zones" id="apercu-zones" aria-hidden="true" focusable="false"><polygon id="apercu-zone" hidden></polygon></svg>
           </div>
         </div>
         <p class="statut" id="scene-etat" aria-live="polite"></p>
@@ -290,6 +293,21 @@
       </div>
     </section>
   </main>
+
+  <!-- Retouche sur l'image : fenêtre en verre dépoli ouverte en cliquant une zone de l'aperçu.
+       Les champs sont construits par app.js depuis les params de la zone cliquée. -->
+  <dialog class="retouche" id="dlg-retouche" aria-labelledby="retouche-titre">
+    <form method="dialog" class="retouche-corps" id="retouche-form">
+      <header class="retouche-tete">
+        <h2 id="retouche-titre">Article</h2>
+        <div class="retouche-actions">
+          <button class="bouton bouton-icone" type="button" id="retouche-annuler" data-icone="close" aria-label="Annuler les modifications" title="Annuler (Échap)"></button>
+          <button class="bouton bouton-accent bouton-icone" type="submit" value="valider" id="retouche-valider" data-icone="checkmark" aria-label="Valider les modifications" title="Valider (Ctrl + Entrée)"></button>
+        </div>
+      </header>
+      <div class="retouche-champs" id="retouche-champs"></div>
+    </form>
+  </dialog>
 
   <dialog class="modale" id="dlg-export" aria-labelledby="export-titre">
     <form method="dialog" class="modale-corps" id="export-form">
@@ -377,6 +395,7 @@
   <script defer src="js/tools/strand.js"></script>
   <script defer src="js/tools/pane.js"></script>
   <script defer src="js/tools/stipple.js"></script>
+  <script defer src="js/tools/news.js"></script>
   <!-- Application (après les outils : elle lit le registre complet) -->
   <script defer src="js/app.js"></script>
 </body>

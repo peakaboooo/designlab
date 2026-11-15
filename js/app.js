@@ -399,8 +399,12 @@
   }
 
   function surParam(cle, valeur, termine) {
+    // Quitter l'atelier (bouton Précédent du navigateur) pendant qu'on tape dans un champ
+    // texte déclenche son « change » après coup, quand il n'y a plus d'outil ouvert.
+    if (!V.outil) return;
     var def = V.outil.params.find(function (d) { return d.cle === cle; });
     V.etat.params[cle] = DL.validerParam(def, valeur);
+    V.controles.majVisibilite(V.etat.params);
     etatChange(termine);
   }
 
@@ -411,7 +415,7 @@
     clearTimeout(minuterieURL);
     minuterieURL = setTimeout(function () {
       if (!V.outil) return;
-      history.replaceState(null, '', '#/' + V.outil.id + '?' + DL.etatVersQuery(V.etat));
+      history.replaceState(null, '', '#/' + V.outil.id + '?' + DL.etatVersQuery(V.etat, V.outil));
     }, 150);
   }
 
@@ -475,6 +479,7 @@
           }
         });
         if (jeton !== V.jeton) return;
+        majZones(e, pw, ph);
         // Révélation au lancement : on relance l'animation CSS (retrait, reflow, ajout).
         if (V.reveler) {
           V.reveler = false;
@@ -484,7 +489,7 @@
           cadre.classList.add('revele');
         }
         $('apercu').setAttribute('aria-label', V.outil.nom + ', seed ' + e.seed + ', format ' + e.format.w + ' × ' + e.format.h);
-        $('scene-etat').textContent = 'Aperçu ' + pw + ' × ' + ph + ' · ' + Math.round(performance.now() - t0) + ' ms · export ' + e.format.w + ' × ' + e.format.h;
+        $('scene-etat').textContent = 'Aperçu ' + pw + ' × ' + ph + ' · ' + Math.round(performance.now() - t0) + ' ms · export ' + e.format.w + ' × ' + e.format.h + (V.zones.length ? ' · clique une coupure pour modifier son texte' : '');
       } while (V.sale);
       if (V.aEngager) { V.aEngager = false; engager(); }
     } catch (err) {
@@ -494,6 +499,125 @@
       V.rendu = false;
     }
   }
+
+  /* ---------- Retouche sur l'image ----------
+     Un outil peut déclarer zones(ctx, w, h, params, rng, palette) : des polygones de l'aperçu,
+     chacun avec un titre et la liste des params texte qu'il montre (News : une zone par
+     coupure). Survoler une zone l'entoure, cliquer ouvre une fenêtre pour réécrire ces textes.
+     L'image suit la saisie ; valider garde, annuler (croix, Échap) remet les textes d'avant.
+     Au clavier, les mêmes champs sont dans le panneau Réglages. */
+  V.zones = [];
+  var ctxMesure = null;   // contexte hors écran : les zones mesurent du texte, elles ne dessinent pas
+  var retouche = null;    // { avant: textes à l'ouverture } tant que la fenêtre est ouverte
+
+  function majZones(e, pw, ph) {
+    V.zones = [];
+    if (V.outil.zones) {
+      if (!ctxMesure) ctxMesure = document.createElement('canvas').getContext('2d');
+      V.zones = V.outil.zones(ctxMesure, pw, ph, e.params, DL.creerRng(e.seed), DL.objetPalette(e.couleurs, e.transparent && V.outil.fondTransparent)) || [];
+    }
+    $('apercu-zones').setAttribute('viewBox', '0 0 ' + pw + ' ' + ph);
+    survolerZone(null);
+  }
+
+  // Zone sous le pointeur : la dernière de la liste gagne, c'est celle du dessus de la pile.
+  function zoneSous(ev) {
+    var cv = $('apercu'), r = cv.getBoundingClientRect();
+    if (!V.outil || !V.zones.length || !r.width || !r.height) return null;
+    var x = (ev.clientX - r.left) * cv.width / r.width, y = (ev.clientY - r.top) * cv.height / r.height;
+    for (var i = V.zones.length - 1; i >= 0; i--) {
+      var pts = V.zones[i].points, dedans = false;
+      for (var a = 0, b = pts.length - 1; a < pts.length; b = a++) {
+        if ((pts[a][1] > y) !== (pts[b][1] > y) && x < (pts[b][0] - pts[a][0]) * (y - pts[a][1]) / (pts[b][1] - pts[a][1]) + pts[a][0]) dedans = !dedans;
+      }
+      if (dedans) return V.zones[i];
+    }
+    return null;
+  }
+
+  function survolerZone(zone) {
+    var cv = $('apercu'), contour = $('apercu-zone');
+    contour.toggleAttribute('hidden', !zone); // élément SVG : pas de propriété .hidden
+    cv.style.cursor = zone ? 'pointer' : '';
+    cv.title = zone ? 'Modifier le texte : ' + zone.titre : '';
+    if (zone) contour.setAttribute('points', zone.points.map(function (p) { return p[0].toFixed(1) + ',' + p[1].toFixed(1); }).join(' '));
+  }
+
+  function ouvrirRetouche(zone) {
+    var dlg = $('dlg-retouche'), champs = $('retouche-champs'), dernier = null;
+    if (!dlg.showModal) return;
+    retouche = { avant: {} };
+    $('retouche-titre').textContent = zone.titre;
+    champs.textContent = '';
+    zone.champs.forEach(function (cle) {
+      var def = V.outil.params.find(function (d) { return d.cle === cle; });
+      if (!def) return;
+      retouche.avant[cle] = V.etat.params[cle];
+      var id = 'retouche-' + cle;
+      var champ = def.lignes
+        ? DL.el('textarea', { id: id, rows: 7, maxlength: def.max || 40, spellcheck: 'false', autocomplete: 'off' })
+        : DL.el('input', { type: 'text', id: id, maxlength: def.max || 40, spellcheck: 'false', autocomplete: 'off' });
+      champ.value = V.etat.params[cle];
+      // Aperçu en direct, sans entrée d'historique : elle est créée à la validation.
+      champ.addEventListener('input', function () {
+        surParam(cle, champ.value, false);
+        V.controles.maj(V.etat);
+      });
+      champs.appendChild(DL.el('div', { classe: 'ctl' }, [DL.el('label', { classe: 'ctl-entete', for: id, texte: def.label }), champ]));
+      dernier = champ;
+    });
+    if (!dernier) { retouche = null; return; }
+    survolerZone(null);
+    dlg.returnValue = '';
+    dlg.showModal();
+    placerRetouche();
+    dernier.focus(); // le paragraphe : c'est lui qu'on vient réécrire
+  }
+
+  /* Ordinateur : la fenêtre se range dans le coin bas droit du plan de travail, pour cacher
+     le moins possible l'image qu'on modifie. Écran étroit : centrée (position native). */
+  function placerRetouche() {
+    var dlg = $('dlg-retouche'), st = dlg.style;
+    st.margin = st.left = st.top = st.right = st.bottom = '';
+    if (window.matchMedia('(max-width: 900px)').matches) return;
+    var s = $('scene').getBoundingClientRect(), l = dlg.offsetWidth, ht = dlg.offsetHeight;
+    st.margin = '0';
+    st.right = st.bottom = 'auto';
+    st.left = DL.clamp(s.right - l - 16, 8, Math.max(8, window.innerWidth - l - 8)) + 'px';
+    st.top = DL.clamp(s.bottom - ht - 16, 8, Math.max(8, window.innerHeight - ht - 8)) + 'px';
+  }
+
+  (function () {
+    var cv = $('apercu'), dlg = $('dlg-retouche');
+    cv.addEventListener('mousemove', function (ev) { survolerZone(zoneSous(ev)); });
+    cv.addEventListener('mouseleave', function () { survolerZone(null); });
+    cv.addEventListener('click', function (ev) {
+      var zone = zoneSous(ev);
+      if (zone) ouvrirRetouche(zone);
+    });
+    $('retouche-annuler').addEventListener('click', function () { dlg.close('annuler'); });
+    // Ctrl/Cmd + Entrée valide depuis le paragraphe (Entrée seule y fait un retour à la ligne).
+    dlg.addEventListener('keydown', function (ev) {
+      if (ev.key === 'Enter' && (ev.ctrlKey || ev.metaKey)) { ev.preventDefault(); dlg.close('valider'); }
+    });
+    // Toute fermeture passe ici : coche (« valider »), croix, Échap.
+    dlg.addEventListener('close', function () {
+      var r = retouche;
+      retouche = null;
+      if (!r || !V.outil) return;
+      var change = Object.keys(r.avant).some(function (k) { return V.etat.params[k] !== r.avant[k]; });
+      if (!change) return;
+      if (dlg.returnValue !== 'valider') {
+        Object.keys(r.avant).forEach(function (k) { V.etat.params[k] = r.avant[k]; });
+        V.controles.maj(V.etat);
+      }
+      etatChange(dlg.returnValue === 'valider');
+    });
+    // Changement de page pendant la retouche (bouton Précédent) : on ferme sans rien remettre.
+    window.addEventListener('hashchange', function () {
+      if (dlg.open) { retouche = null; dlg.close(); }
+    });
+  })();
 
   // Petite copie de l'aperçu pour l'historique et les favoris.
   function vignetteApercu() {
@@ -643,7 +767,7 @@
   $('b-copier-seed').addEventListener('click', function () { copier(V.etat.seed, this); });
   $('b-copier-lien').addEventListener('click', function () {
     var base = location.href.split('#')[0];
-    copier(base + '#/' + V.outil.id + '?' + DL.etatVersQuery(V.etat), this);
+    copier(base + '#/' + V.outil.id + '?' + DL.etatVersQuery(V.etat, V.outil), this);
   });
 
   /* ---------- Palette ---------- */
@@ -824,7 +948,7 @@
       setTimeout(function () { $('filtre-texte').focus(); $('filtre-texte').select(); }, 0);
       return;
     }
-    if ($('dlg-export').open) return; // la modale gère Échap nativement
+    if ($('dlg-export').open || $('dlg-retouche').open) return; // les modales gèrent Échap nativement
     var t = ev.target;
 
     if (ev.key === 'Escape') {

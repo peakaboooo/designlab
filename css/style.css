@@ -10,6 +10,7 @@
   --fond: #121212;            /* page et plan de travail */
   --fond-rgb: 18, 18, 18;
   --surface: #1A1A1A;         /* barres, panneaux, cartes */
+  --surface-rgb: 26, 26, 26;
   --surface-2: #232323;       /* champs, survol */
   --surface-3: #2D2D2D;       /* état enfoncé, segment actif */
   --encre: #ECECEC;
@@ -80,6 +81,7 @@
   --fond: #E6E6E6;
   --fond-rgb: 230, 230, 230;
   --surface: #F5F5F5;
+  --surface-rgb: 245, 245, 245;
   --surface-2: #FFFFFF;
   --surface-3: #E2E2E2;
   --encre: #1A1A1A;
@@ -959,7 +961,7 @@ input[type="range"]:focus-visible::-webkit-slider-thumb { box-shadow: 0 0 0 3px 
 input[type="range"]:focus-visible::-moz-range-thumb { box-shadow: 0 0 0 3px rgba(var(--accent-rgb), 0.85); }
 
 /* Champs : fond légèrement relevé, trait fin, rayon de 8 px. */
-select, input[type="text"], input[type="number"], input[type="search"] {
+select, textarea, input[type="text"], input[type="number"], input[type="search"] {
   width: 100%;
   min-height: var(--h-champ);
   padding: 0 var(--e2);
@@ -970,10 +972,20 @@ select, input[type="text"], input[type="number"], input[type="search"] {
   font: 400 var(--t-sm)/1.2 var(--police-texte);
   transition: border-color var(--duree);
 }
-select:hover, input[type="text"]:hover, input[type="number"]:hover, input[type="search"]:hover { border-color: rgba(var(--encre-rgb), 0.26); }
-select:focus-visible, input[type="text"]:focus-visible, input[type="number"]:focus-visible, input[type="search"]:focus-visible {
+select:hover, textarea:hover, input[type="text"]:hover, input[type="number"]:hover, input[type="search"]:hover { border-color: rgba(var(--encre-rgb), 0.26); }
+select:focus-visible, textarea:focus-visible, input[type="text"]:focus-visible, input[type="number"]:focus-visible, input[type="search"]:focus-visible {
   border-color: rgba(var(--accent-rgb), 0.9);
   box-shadow: 0 0 0 3px rgba(var(--accent-rgb), 0.25);
+}
+/* Champ sur plusieurs lignes (param texte avec « lignes ») : même dessin que les autres champs,
+   hauteur réglable vers le bas seulement pour ne pas déborder du panneau. */
+textarea {
+  display: block;
+  padding: 6px var(--e2);
+  line-height: 1.4;
+  resize: vertical;
+  min-height: calc(var(--h-champ) * 2);
+  max-height: 40vh;
 }
 input::placeholder { color: var(--attenue); }
 input[type="search"]::-webkit-search-cancel-button { display: none; }
@@ -1158,6 +1170,45 @@ select option { background: var(--surface-2); color: var(--encre); }
   font: 500 11px/1 var(--police-texte);
   cursor: pointer;
 }
+
+/* ---------- Retouche sur l'image ----------
+   Outils qui déclarent des zones (News) : la zone survolée est entourée, un clic ouvre une
+   fenêtre où réécrire son texte. */
+.scene-cadre { position: relative; }
+.apercu-zones { position: absolute; inset: 0; width: 100%; height: 100%; overflow: hidden; pointer-events: none; }
+.apercu-zones polygon {
+  fill: rgba(var(--accent-rgb), 0.14);
+  stroke: var(--accent-texte);
+  stroke-width: 2;
+  stroke-linejoin: round;
+  vector-effect: non-scaling-stroke;
+}
+/* Fenêtre en verre dépoli, demandée par l'autrice : seule surface translucide du site avec la
+   barre de filtres. L'image reste visible derrière et suit la saisie. Opacité de 0,72 : en
+   dessous, le texte perd son contraste AA quand la fenêtre passe sur une image claire. */
+.retouche {
+  width: min(380px, calc(100vw - 32px));
+  padding: 0;
+  border: 1px solid rgba(var(--encre-rgb), 0.2);
+  border-radius: var(--rayon-xl);
+  background: rgba(var(--surface-rgb), 0.72);
+  -webkit-backdrop-filter: blur(22px) saturate(1.6);
+  backdrop-filter: blur(22px) saturate(1.6);
+  color: var(--encre);
+  box-shadow: var(--ombre-flottante), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+.retouche::backdrop { background: rgba(0, 0, 0, 0.16); }
+.retouche-corps { display: grid; gap: var(--e3); padding: var(--e4); }
+.retouche-tete { display: flex; justify-content: space-between; align-items: center; gap: var(--e3); }
+.retouche-tete h2 { font: 600 var(--t-md)/1.2 var(--police-texte); letter-spacing: -0.01em; }
+.retouche-actions { display: flex; gap: 6px; }
+.retouche-champs { display: grid; gap: var(--e3); }
+.retouche .retouche-champs textarea,
+.retouche .retouche-champs input[type="text"] { background: rgba(var(--fond-rgb), 0.5); }
+/* Bouton réduit à son icône (valider, annuler) : carré, le libellé est dans aria-label et title. */
+.bouton-icone { width: var(--h-champ); padding: 0; }
+/* Groupe de contrôles sous un intertitre (les articles de News). */
+.ctl-groupe { display: grid; gap: 10px; padding-top: var(--e3); border-top: 1px solid var(--ligne); }
 
 /* ---------- Modale d'export (Toolcraft « dialog ») ---------- */
 .modale {
