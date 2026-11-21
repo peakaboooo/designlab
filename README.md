@@ -33,7 +33,7 @@ Les bibliothèques et polices sont embarquées dans `vendor/`, chacune avec sa l
  
 - **Bibliothèques** : p5.js (LGPL 2.1), Paper.js (MIT), d3-delaunay (ISC), chroma.js (BSD), icônes Carbon d'IBM (Apache 2.0)
 - **Cartes** (outil Sonar) : contours des terres Natural Earth 1:50m (domaine public), via world-atlas (ISC)
-- **Polices** : Inter (interface), Space Grotesk, Space Mono, Archivo Black, Instrument Serif et Dela Gothic One (SIL Open Font License)
+- **Polices** : Annotation Mono (interface), Space Grotesk, Space Mono, Archivo Black, Instrument Serif et Dela Gothic One (SIL Open Font License)
 - **Logo** : GL Studio
  
 - **Interface** : langage visuel inspiré de Toolcraft (Pixel Point, MIT), réécrit en CSS et JavaScript simples

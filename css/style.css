@@ -1,6 +1,6 @@
 /* DesignLab : feuille de style unique.
    Interface épurée d'atelier de retouche, langage visuel porté de Toolcraft (Pixel Point, MIT) :
-   gris neutres, Inter, rayons de 6 à 10 px, traits fins à faible opacité, sliders à piste de 1 px,
+   gris neutres, Annotation Mono, rayons de 6 à 10 px, traits fins à faible opacité, sliders à piste de 1 px,
    une seule couleur d'accent. Les couleurs vives viennent des visuels, pas de l'interface.
    Toute valeur répétée passe par un token de :root. */
 
@@ -36,8 +36,9 @@
   --rayon-lg: 10px;
   --rayon-xl: 14px;
 
-  --police-texte: "Inter", ui-sans-serif, system-ui, "Segoe UI", Roboto, Arial, sans-serif;
-  --police-mono: ui-monospace, "SFMono-Regular", "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
+  /* Annotation Mono variable (graisse 100 à 1000) pour toute l'interface : les graisses existantes s'appliquent telles quelles. */
+  --police-texte: "Annotation Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  --police-mono: "Annotation Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
 
   /* Corps de texte de l'interface : petits, comme dans un logiciel (Toolcraft : 11 / 12 / 13 px). */
   --t-2xs: 11px;
@@ -117,7 +118,6 @@ body {
   background: var(--fond);
   color: var(--encre);
   font: 400 var(--t-md)/1.5 var(--police-texte);
-  font-feature-settings: "cv11", "ss01";
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   overflow-x: hidden;
@@ -478,7 +478,7 @@ canvas { display: block; }
 .filtre-recherche input[type="search"] {
   width: 100%;
   padding-left: 30px;
-  padding-right: 56px;
+  padding-right: 68px;
 }
 .filtre-recherche kbd { position: absolute; right: 7px; pointer-events: none; }
 /* Autocomplétion : calque posé sur le champ, mêmes police et retrait que le texte tapé
@@ -486,7 +486,7 @@ canvas { display: block; }
    apparaît, en grisé, juste après le curseur. */
 .filtre-fantome {
   position: absolute;
-  inset: 0 56px 0 31px;
+  inset: 0 68px 0 31px;
   display: flex;
   align-items: center;
   overflow: hidden;
