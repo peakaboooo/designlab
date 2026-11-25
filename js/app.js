@@ -365,6 +365,7 @@
       if (outil.moteur === 'webgl' && !DL.webglDisponible()) libs.push('WebGL indisponible : rendu de repli 2D');
       $('outil-libs').textContent = libs.join(' · ');
       document.title = outil.nom + ' · Lab Design';
+      if (DL.preparerDessin) DL.preparerDessin(outil); // avant les contrôles : la boîte de pinceaux s'y inscrit
       V.controles = DL.construireControles($('ctl-params'), outil, etat, surParam);
       $('c-transparent').disabled = !outil.fondTransparent;
       $('c-transparent').parentNode.title = outil.fondTransparent ? '' : 'Cet outil remplit toujours tout le cadre.';
@@ -480,6 +481,7 @@
         });
         if (jeton !== V.jeton) return;
         majZones(e, pw, ph);
+        if (DL.dessinRendu) DL.dessinRendu();
         // Révélation au lancement : on relance l'animation CSS (retrait, reflow, ajout).
         if (V.reveler) {
           V.reveler = false;
@@ -489,7 +491,7 @@
           cadre.classList.add('revele');
         }
         $('apercu').setAttribute('aria-label', V.outil.nom + ', seed ' + e.seed + ', format ' + e.format.w + ' × ' + e.format.h);
-        $('scene-etat').textContent = 'Aperçu ' + pw + ' × ' + ph + ' · ' + Math.round(performance.now() - t0) + ' ms · export ' + e.format.w + ' × ' + e.format.h + (V.zones.length ? ' · clique une coupure pour modifier son texte' : '');
+        $('scene-etat').textContent = 'Aperçu ' + pw + ' × ' + ph + ' · ' + Math.round(performance.now() - t0) + ' ms · export ' + e.format.w + ' × ' + e.format.h + (V.zones.length ? ' · clique une coupure pour modifier son texte' : '') + (V.outil.dessin ? " · dessine sur l'image" : '');
       } while (V.sale);
       if (V.aEngager) { V.aEngager = false; engager(); }
     } catch (err) {
@@ -860,6 +862,22 @@
 
   DL.initExport(function () { return V.outil ? { outil: V.outil, etat: V.etat } : null; });
 
+  /* Dessin à la main sur l'aperçu (Girih) : dessin.js gère le geste, l'atelier range le trait
+     dans le param comme n'importe quel réglage (URL, historique, favoris). */
+  DL.initDessin({
+    outil: function () { return V.outil; },
+    etat: function () { return V.etat; },
+    taille: function () { return V.taille; },
+    changer: function (valeur, termine) {
+      var def = V.outil && V.outil.params.find(function (d) { return d.type === 'dessin'; });
+      if (!def) return;
+      V.etat.params[def.cle] = DL.validerParam(def, valeur);
+      V.controles.maj(V.etat);
+      etatChange(termine);
+    },
+    statut: function (texte) { $('scene-etat').textContent = texte; }
+  });
+
   /* ---------- Image glissée ou collée ----------
      Pour un outil qui a un réglage d'image (Stipple) : un fichier lâché n'importe où dans
      l'atelier, ou collé avec Ctrl+V, devient le sujet. Sans ce réglage, on n'intercepte rien.
@@ -963,6 +981,9 @@
     // Espace sur un bouton, une case ou un radio garde son rôle natif (activer l'élément).
     if (ev.key === ' ' && t.tagName !== 'INPUT' && (t.tagName === 'BUTTON' || t.tagName === 'A' || t.tagName === 'SUMMARY')) return;
     if (ev.key === ' ' && t.tagName === 'INPUT' && t.type !== 'range') return;
+
+    // Outil à dessiner : 1 à 9 choisissent un pinceau.
+    if (V.outil.dessin && /^[1-9]$/.test(ev.key) && DL.choisirPinceau(+ev.key - 1)) return;
 
     switch (ev.key.toLowerCase()) {
       case ' ': ev.preventDefault(); regenerer(); break;

@@ -32,8 +32,7 @@
     ['Sprig', 'Répétitions botaniques'],
     ['Frond', 'Natures mortes dégradées'],
     ['Pith', 'Tissus cellulaires tramés'],
-    ['Coral', "Textile d'éventails marins"],
-    ['Crowd', 'Foules floutées']
+    ['Coral', "Textile d'éventails marins"]
   ];
 
   DL.outils = [];

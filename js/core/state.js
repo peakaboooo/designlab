@@ -51,6 +51,8 @@
     if (def.type === 'texte') return String(v).slice(0, def.max || 40);
     // Image importée : seulement son identifiant (images.js), jamais l'image elle-même.
     if (def.type === 'image') return DL.ID_IMAGE.test(String(v)) ? String(v) : def.defaut;
+    // Traits dessinés (dessin.js) : seulement les traits lisibles, longueur bornée.
+    if (def.type === 'dessin') return DL.validerTraits(v, def.max);
     return def.defaut;
   }
   DL.validerParam = valider;
@@ -78,11 +80,11 @@
   DL.memeEtat = function (a, b) { return DL.etatVersQuery(a) === DL.etatVersQuery(b); };
 
   /* État → partie « query » du hash. Avec l'outil (adresse de la page, lien copié), les textes
-     restés à leur valeur par défaut sont omis : un champ absent vaut le défaut à la lecture,
+     (et un dessin vide) restés à leur valeur par défaut sont omis : un champ absent vaut le défaut à la lecture,
      et l'adresse de News (douze textes) reste courte tant qu'on n'a rien réécrit. */
   DL.etatVersQuery = function (e, outil) {
     var defauts = {};
-    if (outil) outil.params.forEach(function (d) { if (d.type === 'texte') defauts[d.cle] = d.defaut; });
+    if (outil) outil.params.forEach(function (d) { if (d.type === 'texte' || d.type === 'dessin') defauts[d.cle] = d.defaut; });
     var p = Object.keys(e.params).filter(function (k) {
       return !(k in defauts) || e.params[k] !== defauts[k];
     }).map(function (k) {

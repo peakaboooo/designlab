@@ -60,7 +60,7 @@
   DL.construireControles = function (conteneur, outil, etat, surChangement) {
     conteneur.textContent = '';
     var champs = {};
-    var importerImage = null, afficherImage = null;
+    var importerImage = null, afficherImage = null, afficherDessin = null;
     // Groupes (« groupe » dans la définition) : params rangés sous un intertitre commun.
     // conditions : ce qui s'affiche ou non selon les réglages (« visible » dans la définition).
     var groupes = {}, conditions = [];
@@ -144,6 +144,14 @@
         entete.appendChild(valeur);
         importerImage = img.charger;
         afficherImage = img.afficher;
+      } else if (def.type === 'dessin') {
+        // Dessin à la main (dessin.js) : pinceaux, taille, nombre de traits, tout effacer.
+        var des = DL.controleDessin(def, outil.dessin, id, surChangement);
+        input = des.corps;
+        mode = 'dessin';
+        nom = el('span', { id: id + '-l', texte: def.label });
+        entete.replaceChild(nom, entete.firstChild);
+        afficherDessin = des.afficher;
       }
 
       ligne.appendChild(entete);
@@ -171,6 +179,7 @@
       Object.keys(champs).forEach(function (k) {
         var c = champs[k], v = e.params[k];
         if (c.mode === 'image') { afficherImage(v); return; }
+        if (c.mode === 'dessin') { afficherDessin(v); return; }
         if (c.mode === 'toggle') c.input.checked = !!v;
         else if (c.mode === 'segments') {
           c.input.querySelectorAll('input').forEach(function (r) { r.checked = r.value === String(v); });

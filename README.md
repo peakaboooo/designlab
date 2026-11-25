@@ -14,7 +14,8 @@ Chaque images est possède une seed, tu peux la partager à n'importe qui il obt
 | Paysages et matières | 02 Terrain · 09 Vein (SVG) · 12 Strate · 15 Shibori · 38 Strand (SVG) |
 | Lignes et op-art | 03 Filament · 05 Warp · 13 Moiré (SVG) · 16 Weave · 18 Rise (SVG) · 22 Optic · 32 Zig (SVG) · 33 Vee (SVG) |
 | Papier et affiches | 06 Riso · 08 Specimen · 14 Origami · 21 Modular (SVG) · 37 Kiosk · 41 News |
-| Motifs et géométrie | 11 Arabesque · 17 Relief · 19 Dahlia · 24 Tokens (SVG) |
+| Motifs et géométrie | 11 Arabesque · 17 Relief · 19 Dahlia · 24 Tokens (SVG) · 43 Girih (SVG, à dessiner) |
+| Scènes | 42 Crowd |
 | Couleur et trames | 04 Aura · 07 Benday · 25 Sonar · 29 Blot · 39 Pane (SVG) · 40 Stipple |
 | Typo | 23 Cipher (SVG) · 28 Smear · 30 Ransom · 36 Atlas |
 | Éléments à composer | 26 Gloop (SVG) · 27 Planche (SVG) |

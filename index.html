@@ -111,6 +111,8 @@
           <li><a href="#/pane">39 Pane</a> : panneaux de verre en dégradé, export SVG</li>
           <li><a href="#/stipple">40 Stipple</a> : portraits en pointillé, depuis ta photo ou un sujet généré</li>
           <li><a href="#/news">41 News</a> : collage de coupures de journaux, avec tes titres et ton texte</li>
+          <li><a href="#/crowd">42 Crowd</a> : foules floutées vues du dessus, en plongée ou de face</li>
+          <li><a href="#/girih">43 Girih</a> : ornements en miroir que tu dessines, répétés à l'infini, export SVG</li>
         </ol>
       </section>
     </noscript>
@@ -133,9 +135,9 @@
              fermeture, pour qu'elle soit toujours visible. À mettre à jour à chaque nouvel outil
              (numéro, nom, description, lien) : voir « Ajouter un outil » dans CLAUDE.md. -->
         <aside class="nouveaute" aria-label="Nouveauté">
-          <a class="nouveaute-lien" href="#/news">
+          <a class="nouveaute-lien" href="#/girih">
             <span class="nouveaute-badge">Nouveau</span>
-            <span class="nouveaute-texte"><strong>41 News</strong><span> : un collage de coupures de journaux, avec tes titres et ton texte.</span></span>
+            <span class="nouveaute-texte"><strong>43 Girih</strong><span> : dessine, ton trait se reflète et se répète à l'infini.</span></span>
             <span class="nouveaute-fleche"><svg class="icone" viewBox="0 0 32 32" fill="currentColor" aria-hidden="true" focusable="false"><path d="M18 6 16.57 7.393 24.15 15 4 15 4 17 24.15 17 16.57 24.573 18 26 28 16 18 6z"/></svg></span>
           </a>
         </aside>
@@ -351,6 +353,7 @@
   <script defer src="js/core/images.js"></script>
   <script defer src="js/core/engines.js"></script>
   <script defer src="js/core/controls.js"></script>
+  <script defer src="js/core/dessin.js"></script>
   <script defer src="js/core/state.js"></script>
   <script defer src="js/core/export.js"></script>
   <!-- Outils : une ligne par outil -->
@@ -396,6 +399,8 @@
   <script defer src="js/tools/pane.js"></script>
   <script defer src="js/tools/stipple.js"></script>
   <script defer src="js/tools/news.js"></script>
+  <script defer src="js/tools/crowd.js"></script>
+  <script defer src="js/tools/girih.js"></script>
   <!-- Application (après les outils : elle lit le registre complet) -->
   <script defer src="js/app.js"></script>
 </body>

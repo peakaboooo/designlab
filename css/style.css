@@ -1080,6 +1080,32 @@ select option { background: var(--surface-2); color: var(--encre); }
 }
 .ctl-image-nom { min-width: 0; max-width: 60%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .ctl-note { font-size: var(--t-2xs); line-height: 1.45; color: var(--attenue); }
+
+/* Dessin à la main (param de type 'dessin', dessin.js) : pinceaux en grille, chacun avec son
+   icône, son nom et sa touche toujours visible (comme le rail). */
+.dessin-champ { display: grid; gap: 6px; }
+.pinceaux { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 4px; margin-bottom: var(--e1); }
+.pinceaux .pinceau { justify-content: flex-start; gap: 5px; min-width: 0; padding: 0 6px; }
+.pinceaux .pinceau span { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.pinceaux .pinceau kbd { margin-left: auto; }
+.pinceaux .pinceau[aria-pressed="true"] { color: var(--accent-texte); }
+.dessin-ligne { display: flex; align-items: center; justify-content: space-between; gap: 6px; }
+canvas.dessinable { cursor: crosshair; touch-action: none; }
+/* Calque du geste : axes de symétrie de l'ornement survolé, reflet du trait en cours. */
+.apercu-dessin .axe {
+  stroke: var(--accent-texte);
+  stroke-width: 1;
+  stroke-dasharray: 4 4;
+  opacity: 0.7;
+  vector-effect: non-scaling-stroke;
+}
+.apercu-dessin .trace {
+  fill: none;
+  stroke: rgba(var(--accent-rgb), 0.55);
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.apercu-dessin circle.trace { fill: rgba(var(--accent-rgb), 0.55); stroke: none; }
 /* Fichier glissé au-dessus de l'atelier : le plan de travail montre où le lâcher. */
 .scene.depot { box-shadow: inset 0 0 0 2px rgba(var(--accent-rgb), 0.85); }
 .scene.depot::after {
@@ -1313,7 +1339,7 @@ select option { background: var(--surface-2); color: var(--encre); }
   .nuancier { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   .seed-ligne { grid-template-columns: 1fr 1fr; }
   .seed-ligne input { grid-column: 1 / -1; }
-  .options kbd, .historique-actions kbd, .palette-actions kbd { display: none; }
+  .options kbd, .historique-actions kbd, .palette-actions kbd, .pinceaux kbd { display: none; }
 }
 
 /* Mouvement réduit : on coupe les transitions et animations, pas seulement on les ralentit. */
